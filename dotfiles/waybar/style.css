@@ -1,0 +1,261 @@
+* {
+    /* `otf-font-awesome` is required to be installed for icons */
+    font-family: "FiraCode Nerd Font","Noto Sans Symbols","Noto Sans Emoji";
+    font-size: 13px;
+    margin: 1px 0px;
+}
+
+window#waybar {
+    background-color: transparent;
+    color:#ffffff;
+}
+
+#custom-power{
+    padding: 0 13px 0 8px;
+    border-radius: 26px;
+    border: 2px solid;
+    background: rgba(50, 50, 50, 1);
+    color: #ffffff;
+}
+#custom-power.arch{
+    border-color: #1793d1;
+}
+#custom-power.off{
+    border-color: #ff0000;
+}
+#custom-power.reboot{
+    border-color: #d09217;
+}
+#custom-power.hiber{
+    border-color: #d01292;
+}
+
+#custom-power.arch:hover{
+    background-color: #1793d1;
+    color:#000000;
+}
+#custom-power.off:hover{
+    background-color: #ff0000;
+    color:#000000;
+}
+#custom-power.reboot:hover{
+    background-color: #d09217;
+    color:#000000;
+}
+#custom-power.hiber:hover{
+    background-color: #d01292;
+    color:#000000;
+}
+
+.media{
+    padding: 0 10px;
+    border-radius: 26px;
+    border: 2px solid #ff0000;
+    background: rgba(50, 50, 50, 1);
+    color: #ffffff;
+}
+.media:hover{
+    background-color: #ff0000;
+    color:#000000;
+}
+
+/* general style for buttons */
+#clock, #battery, #backlight, #pulseaudio, #network
+{
+    padding: 0 7px;
+    border-radius: 26px;
+    border: 2px solid;
+    background: rgba(50, 50, 50, 1);
+    color: #ffffff;
+}
+
+#workspaces {
+    border-radius:26px;
+    border: 2px solid #8A2BE2;
+    box-shadow: 0 0 10px #8A2BE2;
+    background: rgba(40, 40, 40, 1);
+}
+
+#workspaces button {
+    padding: 0 7px;
+    border-radius:26px;
+    background-color:transparent;
+    color: #ffffff;
+    transition: background-color 0.5s ease,
+                color 0.5s ease,
+                padding 0.5s ease
+}
+
+/* css de mierda hace cosas raras con los tamaños cuando hover lpm */
+#workspaces button:hover {
+    transition: none;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow:none;
+}
+
+#workspaces button.active {
+    padding: 0 15px;
+    border: 2px solid #ff00ff;
+    box-shadow: 0 0 10px #ff00ff;
+    background-color: #ffffff;
+    color: #000000;
+}
+
+
+#clock {
+    border-color: #7FFFD4;
+}
+#clock:hover{
+    background-color: #7FFFD4;
+    color:#000000;
+}
+
+
+#battery {
+    border-color: #00ff00;
+}
+#battery:hover {
+    background-color: #00ff00;
+    color:#000000;
+}
+
+#battery.charging, #battery.plugged {
+    border-color: #00ffff;
+}
+#battery.charging:hover, #battery.plugged:hover {
+    background-color: #00ffff;
+    color:#000000;
+}
+
+#battery.warning:not(.charging) {
+    border-color: #ffa500;
+}
+#battery.warning:not(.charging):hover {
+    background-color: #ffa500;
+    color:#000000;
+}
+
+@keyframes blink {
+    to {
+        border: 2px solid #ff0000;
+        box-shadow: 0 0 10px #ff0000;
+        background-color: #ff0000;
+    }
+}
+
+#battery.critical:not(.charging) {
+    border: 2px solid #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+#battery.critical:not(.charging):hover {
+    border: 2px solid #ffffff;
+    background-color: #ffffff;
+    animation-name: blink;
+    animation-duration: 0.5s;
+    animation-timing-function: steps(12);
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+
+#backlight {
+    border-color: #90b1b1;
+}
+#backlight:hover{
+    background-color: #90b1b1;
+    color:#000000;
+}
+
+
+#network {
+    border-color: #0000ff;
+}
+#network:hover{
+    background-color: #0000ff;
+    color:#000000;
+}
+
+#network.disconnected {
+    border-color: #f53c3c;
+}
+#network.disconnected:hover {
+    background-color: #f53c3c;
+    color:#000000;
+}
+
+
+#pulseaudio {
+    border-color: #f1c40f;
+}
+#pulseaudio:hover {
+    background-color: #f1c40f;
+    color:#000000;
+}
+
+#pulseaudio.muted {
+    padding: 0 13px 0 8px;
+    border-color: #90b1b1;
+}
+#pulseaudio.muted:hover {
+    background-color: #90b1b1;
+    color:#000000;
+}
+
+/*
+ * lo de abajo no esta implementad, lo dejo por si lo quiero agregar
+ */
+
+/*
+#custom-media {
+    background-color: #66cc99;
+    color: #2a5c45;
+    min-width: 100px;
+}
+
+#custom-media.custom-spotify {
+    background-color: #66cc99;
+}
+
+#custom-media.custom-vlc {
+    background-color: #ffa000;
+}
+
+#mpd {
+    background-color: #66cc99;
+    color: #2a5c45;
+}
+
+#mpd.disconnected {
+    background-color: #f53c3c;
+}
+
+#mpd.stopped {
+    background-color: #90b1b1;
+}
+
+#mpd.paused {
+    background-color: #51a37a;
+}
+
+#keyboard-state {
+    background: #97e1ad;
+    color: #000000;
+    padding: 0 0px;
+    min-width: 16px;
+}
+
+#keyboard-state > label {
+    padding: 0 5px;
+}
+
+#keyboard-state > label.locked {
+    background: rgba(0, 0, 0, 0.2);
+}*/
