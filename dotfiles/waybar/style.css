@@ -4,6 +4,7 @@
     font-size: 13px;
     margin: 1px 0px;
 }
+window.eDP-1 * { font-size: 20px; }
 
 window#waybar {
     background-color: transparent;
@@ -11,9 +12,9 @@ window#waybar {
 }
 
 #custom-power{
-    padding: 0 13px 0 8px;
-    border-radius: 26px;
-    border: 2px solid;
+    padding: 0 16px 0 10px;
+    border-radius:100%;
+    border: 3px solid;
     background: rgba(50, 50, 50, 1);
     color: #ffffff;
 }
@@ -50,7 +51,7 @@ window#waybar {
 .media{
     padding: 0 10px;
     border-radius: 26px;
-    border: 2px solid #ff0000;
+    border: 3px solid #ff0000;
     background: rgba(50, 50, 50, 1);
     color: #ffffff;
 }
@@ -58,26 +59,30 @@ window#waybar {
     background-color: #ff0000;
     color:#000000;
 }
+#custom-mediaR, #custom-mediaL {
+    padding: 0 15px 0 11px;
+    border-radius :100%;
+}
 
 /* general style for buttons */
 #clock, #battery, #backlight, #pulseaudio, #network
 {
     padding: 0 7px;
     border-radius: 26px;
-    border: 2px solid;
+    border: 3px solid;
     background: rgba(50, 50, 50, 1);
     color: #ffffff;
 }
 
 #workspaces {
     border-radius:26px;
-    border: 2px solid #8A2BE2;
+    border: 3px solid #8A2BE2;
     box-shadow: 0 0 10px #8A2BE2;
     background: rgba(40, 40, 40, 1);
 }
 
 #workspaces button {
-    padding: 0 7px;
+    padding: 0 9px;
     border-radius:26px;
     background-color:transparent;
     color: #ffffff;
@@ -89,7 +94,7 @@ window#waybar {
 /* css de mierda hace cosas raras con los tamaños cuando hover lpm */
 #workspaces button:hover {
     transition: none;
-    border: 2px solid #ff00ff;
+    border: 3px solid #ff00ff;
     box-shadow: 0 0 10px #ff00ff;
     background-color: #ffffff;
     color: #000000;
@@ -98,7 +103,7 @@ window#waybar {
 
 #workspaces button.active {
     padding: 0 15px;
-    border: 2px solid #ff00ff;
+    border: 3px solid #ff00ff;
     box-shadow: 0 0 10px #ff00ff;
     background-color: #ffffff;
     color: #000000;
@@ -140,14 +145,14 @@ window#waybar {
 
 @keyframes blink {
     to {
-        border: 2px solid #ff0000;
+        border: 3px solid #ff0000;
         box-shadow: 0 0 10px #ff0000;
         background-color: #ff0000;
     }
 }
 
 #battery.critical:not(.charging) {
-    border: 2px solid #ffffff;
+    border: 3px solid #ffffff;
     animation-name: blink;
     animation-duration: 0.5s;
     animation-timing-function: steps(12);
@@ -156,7 +161,7 @@ window#waybar {
 }
 
 #battery.critical:not(.charging):hover {
-    border: 2px solid #ffffff;
+    border: 3px solid #ffffff;
     background-color: #ffffff;
     animation-name: blink;
     animation-duration: 0.5s;
@@ -201,7 +206,7 @@ window#waybar {
 }
 
 #pulseaudio.muted {
-    padding: 0 13px 0 8px;
+    padding: 0 16px 0 10px;
     border-color: #90b1b1;
 }
 #pulseaudio.muted:hover {
