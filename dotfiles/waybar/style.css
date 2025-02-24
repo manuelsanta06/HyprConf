@@ -1,3 +1,7 @@
+/*
+ *  things with "window.DP-1" or "window.eDP-1" are specific for my monitors
+ */
+
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: "FiraCode Nerd Font","Noto Sans Symbols","Noto Sans Emoji";
@@ -11,12 +15,27 @@ window#waybar {
     color:#ffffff;
 }
 
-#custom-power{
-    padding: 0 16px 0 10px;
-    border-radius:100%;
+/* general style for buttons */
+.media , #custom-power, #clock, #battery, #backlight, #pulseaudio, #network, #workspaces
+{
+    padding: 0 7px;
+    border-radius: 26px;
     border: 3px solid;
-    background: rgba(50, 50, 50, 1);
-    color: #ffffff;
+    background: rgba(40, 40, 40, 1);
+}
+window.DP-1 .media ,window.DP-1 #custom-power ,window.DP-1 #clock,window.DP-1  #battery,window.DP-1  #backlight,window.DP-1  #pulseaudio,window.DP-1  #network,window.DP-1  #workspaces
+{border-width: 2px;}
+
+
+window#waybar *:hover{color:#000000;}
+
+
+#custom-power{
+    padding: 0 14px 0 10px;
+    border-radius:100%;
+}
+window.eDP-1 #custom-power{
+    padding: 0 16px 0 10px;
 }
 #custom-power.arch{
     border-color: #1793d1;
@@ -33,58 +52,37 @@ window#waybar {
 
 #custom-power.arch:hover{
     background-color: #1793d1;
-    color:#000000;
 }
 #custom-power.off:hover{
     background-color: #ff0000;
-    color:#000000;
 }
 #custom-power.reboot:hover{
     background-color: #d09217;
-    color:#000000;
 }
 #custom-power.hiber:hover{
     background-color: #d01292;
-    color:#000000;
 }
 
 .media{
-    padding: 0 10px;
-    border-radius: 26px;
-    border: 3px solid #ff0000;
-    background: rgba(50, 50, 50, 1);
-    color: #ffffff;
+    border-color: #ff0000;
 }
 .media:hover{
     background-color: #ff0000;
-    color:#000000;
 }
 #custom-mediaR, #custom-mediaL {
-    padding: 0 15px 0 11px;
-    border-radius :100%;
-}
-
-/* general style for buttons */
-#clock, #battery, #backlight, #pulseaudio, #network
-{
-    padding: 0 7px;
-    border-radius: 26px;
-    border: 3px solid;
-    background: rgba(50, 50, 50, 1);
-    color: #ffffff;
+    border-radius: 100%;
+    padding: 0 14px 0 10px;
 }
 
 #workspaces {
-    border-radius:26px;
-    border: 3px solid #8A2BE2;
+    padding: 0 0px;
+    border-color: #8A2BE2;
     box-shadow: 0 0 10px #8A2BE2;
-    background: rgba(40, 40, 40, 1);
 }
 
 #workspaces button {
     padding: 0 9px;
     border-radius:26px;
-    background-color:transparent;
     color: #ffffff;
     transition: background-color 0.5s ease,
                 color 0.5s ease,
@@ -93,12 +91,9 @@ window#waybar {
 
 /* css de mierda hace cosas raras con los tamaños cuando hover lpm */
 #workspaces button:hover {
-    transition: none;
-    border: 3px solid #ff00ff;
+    border-color: #ff00ff;
     box-shadow: 0 0 10px #ff00ff;
     background-color: #ffffff;
-    color: #000000;
-    box-shadow:none;
 }
 
 #workspaces button.active {
@@ -115,7 +110,6 @@ window#waybar {
 }
 #clock:hover{
     background-color: #7FFFD4;
-    color:#000000;
 }
 
 
@@ -124,7 +118,6 @@ window#waybar {
 }
 #battery:hover {
     background-color: #00ff00;
-    color:#000000;
 }
 
 #battery.charging, #battery.plugged {
@@ -132,7 +125,6 @@ window#waybar {
 }
 #battery.charging:hover, #battery.plugged:hover {
     background-color: #00ffff;
-    color:#000000;
 }
 
 #battery.warning:not(.charging) {
@@ -140,7 +132,6 @@ window#waybar {
 }
 #battery.warning:not(.charging):hover {
     background-color: #ffa500;
-    color:#000000;
 }
 
 @keyframes blink {
@@ -176,7 +167,6 @@ window#waybar {
 }
 #backlight:hover{
     background-color: #90b1b1;
-    color:#000000;
 }
 
 
@@ -185,7 +175,6 @@ window#waybar {
 }
 #network:hover{
     background-color: #0000ff;
-    color:#000000;
 }
 
 #network.disconnected {
@@ -193,7 +182,6 @@ window#waybar {
 }
 #network.disconnected:hover {
     background-color: #f53c3c;
-    color:#000000;
 }
 
 
@@ -202,7 +190,6 @@ window#waybar {
 }
 #pulseaudio:hover {
     background-color: #f1c40f;
-    color:#000000;
 }
 
 #pulseaudio.muted {
@@ -211,7 +198,6 @@ window#waybar {
 }
 #pulseaudio.muted:hover {
     background-color: #90b1b1;
-    color:#000000;
 }
 
 /*
