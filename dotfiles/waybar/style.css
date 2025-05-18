@@ -5,10 +5,13 @@
 * {
     /* `otf-font-awesome` is required to be installed for icons */
     font-family: "FiraCode Nerd Font","Noto Sans Symbols","Noto Sans Emoji";
-    font-size: 13px;
+    font-size: 0.9rem;
     margin: 1px 0px;
 }
+/*
 window.eDP-1 * { font-size: 20px; }
+window.HDMI-A-1 * { font-size: 35px; }
+*/
 
 window#waybar {
     background-color: transparent;
@@ -16,19 +19,20 @@ window#waybar {
 }
 
 /* general style for buttons */
-.media , #custom-power, #clock, #battery, #backlight, #pulseaudio, #network, #workspaces
+.module, tooltip
 {
     padding: 0 7px;
     border-radius: 26px;
     border: 3px solid;
     background: rgba(40, 40, 40, 1);
 }
-window.DP-1 .media ,window.DP-1 #custom-power ,window.DP-1 #clock,window.DP-1  #battery,window.DP-1  #backlight,window.DP-1  #pulseaudio,window.DP-1  #network,window.DP-1  #workspaces
+window.DP-1 .module,tooltip.window.DP1
 {border-width: 2px;}
 
 
 window#waybar *:hover{color:#000000;}
 
+tooltip{border-color:inherit;}
 
 #custom-power{
     padding: 0 14px 0 10px;

@@ -6,7 +6,7 @@ fi
 
 case "$val" in
     "0")
-        swww img --transition-type outer --transition-pos 0.999,0.999 --transition-step 90 $(ls /home/santa/resources/wallpapers/$((1+$RANDOM%$(ls -1q /home/santa/resources/wallpapers/ | wc -l))).* | head -n 1)
+        /home/santa/resources/scripts/rWallpaper.sh
         ;;
     "1")
         systemctl poweroff

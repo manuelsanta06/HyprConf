@@ -7,7 +7,7 @@
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left":["hyprland/workspaces"],
-    "modules-center":["custom/mediaL","custom/mediaC","custom/mediaR",],
+    "modules-center":["custom/mediaL","custom/mediaC","custom/mediaR"],
     "modules-right":[
         "network",
         "pulseaudio",
@@ -23,10 +23,10 @@
         "exec-on-event":true,
         "on-click":
             "echo $(( $(</tmp/powerCounter.txt) + 1 )) > /tmp/powerCounter.txt",
-        "on-click-right":"/etc/xdg/waybar/powerSel.sh",
+        "on-click-right":"/home/santa/.config/waybar/powerSel.sh",
         "interval":"once",
         "format":"{}",
-        "exec":"/etc/xdg/waybar/powerUp.sh"
+        "exec":"/home/santa/.config/waybar/powerUp.sh"
     },
 
     "custom/mediaL":{
@@ -34,26 +34,26 @@
         "hide-empty-text":true,
         "format":"{}",
         "on-click":"playerctl previous",
-        "interval":2,
-        "exec":"/etc/xdg/waybar/musicPlayerL.sh"
+        "interval":10,
+        "exec":"/home/santa/.config/waybar/musicPlayerL.sh"
     },
     "custom/mediaC":{
         "return-type":"json",
         "hide-empty-text":true,
-        "max-length":50,
-        "format":"{}",
+        "max-length":53,
+        "format":" {} ",
         "on-click":"playerctl play-pause",
-        "interval":2,
+        "interval":10,
         "exec-if":"test \"$(playerctl status 2>/dev/null)\" != \"Stopped\"",
-        "exec":"/etc/xdg/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
+        "exec":"/home/santa/.config/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
     },
     "custom/mediaR":{
         "return-type":"json",
         "hide-empty-text":true,
         "format":"{}",
         "on-click":"playerctl next",
-        "interval":2,
-        "exec":"/etc/xdg/waybar/musicPlayerR.sh"
+        "interval":10,
+        "exec":"/home/santa/.config/waybar/musicPlayerR.sh"
     },
 
     //"hyprland/window":{
@@ -87,7 +87,7 @@
             "10":"",
             "urgent": "",
             //"active": "",
-            "default": ""
+            "default": ""
         }
 
     },
@@ -127,6 +127,8 @@
     "backlight": {
         // "device": "acpi_video1",
         "tooltip-format":" brillo",
+        "on-click-right":"brightnessctl s 0%",
+        "on-click":"brightnessctl s 100%",
         "format": "{icon} {percent}%",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
@@ -149,6 +151,7 @@
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
         //"max-length":15,
+        //"format-alt": "{ifname}: {ipaddr}/{cidr}",
         "format-wifi": " {signalStrength}%",
         "tooltip-format-wifi": "{frequency}GHz {essid}",
         "format-ethernet": "{ipaddr}/{cidr} ",
@@ -156,7 +159,14 @@
         "tooltip-format":"{frequency}GHz {ifname}",
         "format-disconnected": "󰤮 Disconected",
         "tooltip-format-disconnected":"",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+        "menu": "on-click",
+		"menu-file": "~/.config/waredMenn.xml",
+		"menu-actions": {
+			"shutdown": "shutdown",
+			"reboot": "reboot",
+			"suspend": "systemctl suspend",
+			"hibernate": "systemctl hibernate",
+		}
     },
 
     "pulseaudio": {
@@ -179,6 +189,7 @@
             "car": "",
             "default": ["", "", ""]
         },
-        "on-click": "pavucontrol"
+        "on-click": "pavucontrol",
+        "on-click-right":"pactl set-sink-mute @DEFAULT_SINK@ toggle"
     }
 }

@@ -7,7 +7,7 @@
     monitor = 0
 
     # Display notification on focused monitor.  Possible modes are:
-    #   mouse: follow mouse pointer
+       mouse: follow mouse pointer
     #   keyboard: follow window with keyboard focus
     #   none: don't follow anything
     #
@@ -23,9 +23,9 @@
 
     # The width of the window, excluding the frame.
     # dynamic width from 0 to 300
-    # width = (0, 300)
+    width = (300, 500)
     # constant width of 300
-    width = 300
+    #width = 300
 
     # The height of a single notification, excluding the frame.
     # dynamic height from 0 to 300
@@ -47,7 +47,7 @@
     scale = 0
 
     # Maximum number of notification (0 means no limit)
-    notification_limit = 20
+    notification_limit = 4
 
     ### Progress bar ###
 
@@ -111,7 +111,7 @@
     frame_width = 3
 
     # Defines color of the frame around the notification window.
-    frame_color = "#aaaaaa"
+    frame_color = "#ff0000"
 
     # Size of gap to display between notifications - requires a compositor.
     # If value is greater than 0, separator_height will be ignored and a border

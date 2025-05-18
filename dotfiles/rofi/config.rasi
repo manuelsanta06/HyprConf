@@ -8,9 +8,9 @@
 
 configuration {
 	/*---------- General setting ----------*/
-	modi: "drun,run,filebrowser,window";
+	modi: "drun,run,filebrowser,calc";
 	case-sensitive: false;
-	cycle: true;
+	cycle: false;
 	filter: "";
 	scroll-method: 0;
 	normalize-match: true;
