@@ -20,8 +20,8 @@ export CPLUS_INCLUDE_PATH="/home/santa/librerias"
 #NORM='\e[0;37m'
 #PS1="[\[${PRIN}\]\u\[${NORM}\]@\e[1;93m\A \e[1;32m$(cat /sys/class/power_supply/BAT0/capacity)%\[${NORM}\]\W]\\$ "
 
+CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
 random_char() {
-    CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
     echo -n "${CHARS:RANDOM % ${#CHARS}:1}"
 }
 
