@@ -9,10 +9,10 @@ alias get_idf='. $HOME/clons/esp-idf/export.sh'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'
 alias cls='clear'
-alias ln='ln -s'
-alias :q='exit'
 alias please='sudo'
 alias pls='sudo'
+alias ln='ln -s'
+alias :q='exit'
 
 export CPLUS_INCLUDE_PATH="/home/santa/librerias"
 
