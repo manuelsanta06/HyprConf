@@ -22,7 +22,7 @@ export CPLUS_INCLUDE_PATH="/home/santa/librerias"
 #NORM='\e[0;37m'
 #PS1="[\[${PRIN}\]\u\[${NORM}\]@\e[1;93m\A \e[1;32m$(cat /sys/class/power_supply/BAT0/capacity)%\[${NORM}\]\W]\\$ "
 
-CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
+CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
 
 random_char() {
     echo -n "${CHARS:RANDOM % ${#CHARS}:1}"
@@ -58,7 +58,7 @@ GIT_PROMPT(){
 }
 ON_GIT_REPO=""
 GIT_BRANCH=""
-PROMPT_COMMAND='GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null);GIT_BRANCH="$(GIT_PROMPT)";ON_GIT_REPO="$(git rev-parse --is-inside-work-tree 2> /dev/null)";'
-PS1="$(setcolor 255)$(setcolor 0) $(setcolor 4 0)   \${GIT_BRANCH}$(setcolor 0 4) \$(random_char)  \W $(setcolor;setcolor 4) $(setcolor)"
+PROMPT_COMMAND='ON_GIT_REPO="$(git rev-parse --is-inside-work-tree 2> /dev/null)";GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null);GIT_BRANCH="$(GIT_PROMPT)";'
+PS1="\[$(setcolor 255)\]\[$(setcolor 0)\] \[$(setcolor 4 0)\]   \[\${GIT_BRANCH}\]\[$(setcolor 0 4)\] \$(random_char)  \W \[$(setcolor)\]\[$(setcolor 4)\] \[$(setcolor)\]"
 
 neofetch
