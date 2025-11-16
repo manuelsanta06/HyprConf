@@ -34,6 +34,7 @@
         "hide-empty-text":true,
         "format":"{}",
         "on-click":"playerctl previous",
+        "on-click-right": "playerctl position 5-",
         "interval":10,
         "exec":"/home/santa/.config/waybar/musicPlayerL.sh"
     },
@@ -52,6 +53,7 @@
         "hide-empty-text":true,
         "format":"{}",
         "on-click":"playerctl next",
+        "on-click-right": "playerctl position 5+",
         "interval":10,
         "exec":"/home/santa/.config/waybar/musicPlayerR.sh"
     },

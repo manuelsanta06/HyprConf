@@ -4,7 +4,7 @@
 
 * {
     /* `otf-font-awesome` is required to be installed for icons */
-    font-family: "FiraCode Nerd Font","Noto Sans Symbols","Noto Sans Emoji";
+    font-family: "FiraCode Nerd Font","Noto Sans Symbols","Noto Sans Emoji","noto fonts cjk";
     font-size: 0.9rem;
     margin: 1px 0px;
 }
@@ -24,7 +24,7 @@ window#waybar {
     padding: 0 7px;
     border-radius: 26px;
     border: 3px solid;
-    background: rgba(40, 40, 40, 1);
+    background: rgba(40, 40, 40, 0.9);
 }
 window.DP-1 .module,tooltip.window.DP1
 {border-width: 2px;}

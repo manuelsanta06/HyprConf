@@ -26,8 +26,8 @@ set hlsearch                                " ni idea
 set relativenumber                          " numeros de linea relativos
 set number                                  " numero de lines
 set title                                   " ni idea
-set shiftwidth=4                            " ni idea
-set tabstop=4                               " tabs de 4 espacios
+set shiftwidth=2                            " ni idea
+set tabstop=2                               " tabs de 4 espacios
 set expandtab                               " los tabs son espacios y no \t
 set mouse=a                                 " ni idea
 set foldmethod=indent                       " foldeo en base al indentado

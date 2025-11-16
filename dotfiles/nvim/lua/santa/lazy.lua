@@ -23,5 +23,5 @@ vim.g.maplocalleader = "\\"
 
 -- Setup lazy.nvim
 require("lazy").setup("santa.plugins")
-require("santa.config.cmp-config")  -- Cargar configuración de nvim-cmp
-require("santa.config.lsp")
+-- require("santa.config.cmp-config")  -- Cargar configuración de nvim-cmp
+-- require("santa.config.lsp")

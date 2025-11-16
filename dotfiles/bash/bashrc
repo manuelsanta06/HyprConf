@@ -2,9 +2,19 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-export PATH="$PATH:$HOME/resources/scripts/"
+source /usr/share/fzf/key-bindings.bash
+source /usr/share/fzf/completion.bash
+source /usr/share/bash-completion/bash_completion
+
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
+export PATH="$PATH:$HOME/resources/scripts/:$HOME/clons/flutter/bin"
+export CPLUS_INCLUDE_PATH="/home/santa/librerias"
+
 
 alias get_idf='. $HOME/clons/esp-idf/export.sh; alias idf="idf.py";alias build="time idf.py build"; alias fullclean="idf.py fullclean"'
+
+
 alias log="git log --all --decorate --oneline --graph"
 alias steamopen='xdg-open steam://rungameid/'
 alias grep='grep --color=auto'
@@ -16,16 +26,12 @@ alias pls='sudo'
 alias ln='ln -s'
 alias :q='exit'
 
-export CPLUS_INCLUDE_PATH="/home/santa/librerias"
-
 #PRIN='\e[1;95m'
 #NORM='\e[0;37m'
 #PS1="[\[${PRIN}\]\u\[${NORM}\]@\e[1;93m\A \e[1;32m$(cat /sys/class/power_supply/BAT0/capacity)%\[${NORM}\]\W]\\$ "
 
 scd(){
-    if [[ -n "$1" ]]; then
-        echo "$1" > /tmp/scdf
-    fi
+    [[ -n "$1" ]] && echo "$1" > /tmp/scdf
     cd $(cat /tmp/scdf)
 }
 
@@ -60,8 +66,9 @@ setcolor() {
 
 
 GIT_PROMPT(){
-    [[  "$ON_GIT_REPO" == "true" ]] && echo "$(setcolor 0 202)$(setcolor 0 202) ${GIT_BRANCH} $(setcolor 4 202)" || echo "$(setcolor 0 4)"
-    #${DIVISORS[$PAR]}
+    [[  "$ON_GIT_REPO" == "true" ]] && 
+        echo "$(setcolor 0 202)$(setcolor 0 202) ${GIT_BRANCH} $(setcolor 202 4)" ||
+        echo "$(setcolor 0 4)"
 }
 ON_GIT_REPO=""
 GIT_BRANCH=""

@@ -15,10 +15,10 @@
       :padding 10
       :children [
         (button :label "Terminal"
-                :on-click '("alacritty"))
+                :on-click ("alacritty"))
         (button :label "Firefox"
-                :on-click '("firefox"))
+                :on-click ("firefox"))
         (button :label "File Manager"
-                :on-click '("thunar"))
+                :on-click ("thunar"))
   ])
 )
