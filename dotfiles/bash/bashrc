@@ -7,8 +7,7 @@ source /usr/share/fzf/completion.bash
 
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
-export PATH="$PATH:$HOME/resources/scripts/:$HOME/clons/flutter/bin"
-export CPLUS_INCLUDE_PATH="/home/santa/librerias"
+export PATH="$PATH:$HOME/clons/flutter/bin"
 
 
 alias get_idf='. $HOME/clons/esp-idf/export.sh; alias idf="idf.py";alias build="time idf.py build"; alias fullclean="idf.py fullclean"'
@@ -25,16 +24,12 @@ alias pls='sudo'
 alias ln='ln -s'
 alias :q='exit'
 
-#PRIN='\e[1;95m'
-#NORM='\e[0;37m'
-#PS1="[\[${PRIN}\]\u\[${NORM}\]@\e[1;93m\A \e[1;32m$(cat /sys/class/power_supply/BAT0/capacity)%\[${NORM}\]\W]\\$ "
-
 scd(){
     [[ -n "$1" ]] && echo "$1" > /tmp/scdf
     cd $(cat /tmp/scdf)
 }
 
-CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
+CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
 
 random_char() {
     echo -n "${CHARS:RANDOM % ${#CHARS}:1}"
@@ -64,14 +59,28 @@ setcolor() {
 }
 
 
-GIT_PROMPT(){
-    [[  "$ON_GIT_REPO" == "true" ]] && 
-        echo "$(setcolor 0 202)$(setcolor 0 202) ${GIT_BRANCH} $(setcolor 202 4)" ||
-        echo "$(setcolor 0 4)"
+build_prompt() {
+    local on_git_repo="$(git rev-parse --is-inside-work-tree 2> /dev/null)"
+    local git_branch
+    [[ "$on_git_repo" == "true" ]] &&
+        git_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+
+    local prompt=""
+    prompt+="\[$(setcolor 255)\]\[$(setcolor 0)\] \[$(setcolor 4 0)\]   "
+
+    if [[ "$on_git_repo" == "true" ]]; then
+        prompt+="\[$(setcolor 0 202)\]"
+        prompt+="\[$(setcolor 0 202)\] ${git_branch} "
+        prompt+="\[$(setcolor 202 4)\]"
+    else
+        prompt+="\[$(setcolor 0 4)\]"
+    fi
+
+    prompt+="\[$(setcolor 0 4)\] $(random_char)  \\W \[$(setcolor)\]\[$(setcolor 4)\] \[$(setcolor)\]"
+
+    PS1="${prompt}"
 }
-ON_GIT_REPO=""
-GIT_BRANCH=""
-PROMPT_COMMAND='ON_GIT_REPO="$(git rev-parse --is-inside-work-tree 2> /dev/null)";GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null);GIT_BRANCH="$(GIT_PROMPT)";'
-PS1="\[$(setcolor 255)\]\[$(setcolor 0)\] \[$(setcolor 4 0)\]   \[\${GIT_BRANCH}\]\[$(setcolor 0 4)\] \$(random_char)  \W \[$(setcolor)\]\[$(setcolor 4)\] \[$(setcolor)\]"
+
+PROMPT_COMMAND=build_prompt
 
 neofetch
