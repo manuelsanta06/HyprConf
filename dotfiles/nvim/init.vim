@@ -38,8 +38,8 @@ set laststatus=2                            " statusbar on
 
 nnoremap <C-S-e> :Neotree toggle<CR>  " Ctrl+Shift+E abre/cierra Neo-tree
 
-set runtimepath+=/home/santa/.local/share/nvim/site
-set runtimepath+=/home/santa/.local/share/nvim/site/pack/hig++/
+set runtimepath+=~/.local/share/nvim/site
+set runtimepath+=~/.local/share/nvim/site/pack/hig++/
 
 set clipboard+=unnamedplus
 "esto hace que la ventana se llame como el archivo

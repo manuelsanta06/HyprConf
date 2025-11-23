@@ -6,7 +6,7 @@ fi
 
 case "$val" in
     "0")
-        /home/santa/resources/scripts/rWallpaper.sh
+        rWallpaper.sh
         ;;
     "1")
         systemctl poweroff

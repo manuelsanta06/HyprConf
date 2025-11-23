@@ -17,7 +17,6 @@ alias log="git log --all --decorate --oneline --graph"
 alias steamopen='xdg-open steam://rungameid/'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'
-alias neo='neofetch'
 alias cls='clear'
 alias please='sudo'
 alias pls='sudo'
@@ -83,4 +82,4 @@ build_prompt() {
 
 PROMPT_COMMAND=build_prompt
 
-neofetch
+fastfetch

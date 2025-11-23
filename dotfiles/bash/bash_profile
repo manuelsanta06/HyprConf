@@ -6,7 +6,7 @@
 
 ## [Completion]
 ## Completion scripts setup. Remove the following line to uninstall
-[ -f /home/santa/.dart-cli-completion/bash-config.bash ] && . /home/santa/.dart-cli-completion/bash-config.bash || true
+[ -f ~/.dart-cli-completion/bash-config.bash ] && . ~/.dart-cli-completion/bash-config.bash || true
 ## [/Completion]
 
 export PATH="$PATH:$HOME/resources/scripts/"

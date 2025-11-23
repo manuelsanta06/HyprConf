@@ -23,10 +23,10 @@
         "exec-on-event":true,
         "on-click":
             "echo $(( $(</tmp/powerCounter.txt) + 1 )) > /tmp/powerCounter.txt",
-        "on-click-right":"/home/santa/.config/waybar/powerSel.sh",
+        "on-click-right":"~/.config/waybar/powerSel.sh",
         "interval":"once",
         "format":"{}",
-        "exec":"/home/santa/.config/waybar/powerUp.sh"
+        "exec":"~/.config/waybar/powerUp.sh"
     },
 
     "custom/mediaL":{
@@ -36,7 +36,7 @@
         "on-click":"playerctl previous",
         "on-click-right": "playerctl position 5-",
         "interval":10,
-        "exec":"/home/santa/.config/waybar/musicPlayerL.sh"
+        "exec":"~/.config/waybar/musicPlayerL.sh"
     },
     "custom/mediaC":{
         "return-type":"json",
@@ -46,7 +46,7 @@
         "on-click":"playerctl play-pause",
         "interval":10,
         "exec-if":"test \"$(playerctl status 2>/dev/null)\" != \"Stopped\"",
-        "exec":"/home/santa/.config/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
+        "exec":"~/.config/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
     },
     "custom/mediaR":{
         "return-type":"json",
@@ -55,7 +55,7 @@
         "on-click":"playerctl next",
         "on-click-right": "playerctl position 5+",
         "interval":10,
-        "exec":"/home/santa/.config/waybar/musicPlayerR.sh"
+        "exec":"~/.config/waybar/musicPlayerR.sh"
     },
 
     //"hyprland/window":{
