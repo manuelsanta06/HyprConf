@@ -44,6 +44,9 @@ window.eDP-1 #custom-power{
 #custom-power.arch{
     border-color: #1793d1;
 }
+#custom-power.windows{
+    border-color: #00ffff;
+}
 #custom-power.off{
     border-color: #ff0000;
 }
@@ -56,6 +59,9 @@ window.eDP-1 #custom-power{
 
 #custom-power.arch:hover{
     background-color: #1793d1;
+}
+#custom-power.windows:hover{
+    background-color: #00ffff;
 }
 #custom-power.off:hover{
     background-color: #ff0000;

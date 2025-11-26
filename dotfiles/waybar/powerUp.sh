@@ -9,12 +9,15 @@ case "$val" in
         echo '{"text":"","tooltip":"Power menu","class":"arch"}'
         ;;
     "1")
-        echo '{"text":"","tooltip":"  shutdown","class":"off"}'
+        echo '{"text":"","tooltip":"  reboot to windows","class":"windows"}'
         ;;
     "2")
-        echo '{"text":"","tooltip":"  reboot","class":"reboot"}'
+        echo '{"text":"","tooltip":"  shutdown","class":"off"}'
         ;;
     "3")
+        echo '{"text":"","tooltip":"  reboot","class":"reboot"}'
+        ;;
+    "4")
         echo '{"text":"","tooltip":"  hibernate","class":"hiber"}'
         ;;
     *)

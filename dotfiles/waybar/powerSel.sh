@@ -9,12 +9,15 @@ case "$val" in
         rWallpaper.sh
         ;;
     "1")
-        systemctl poweroff
+        systemctl reboot --boot-loader-entry=auto-windows
         ;;
     "2")
-        reboot
+        systemctl poweroff
         ;;
     "3")
+        reboot
+        ;;
+    "4")
         systemctl suspend
         ;;
     *)
