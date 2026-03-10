@@ -1,0 +1,8 @@
+
+[mode]
+normal_main = { fg = "#ffffff", bg = "#8f00ff", bold = true }
+
+[status]
+progress_label  = { fg = "#ffffff", bold = true }
+progress_normal = { fg = "#8f00ff", bg = "#333333" }
+progress_error  = { fg = "#ff0000", bg = "#333333" }

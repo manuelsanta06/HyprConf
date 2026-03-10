@@ -9,53 +9,53 @@
     "modules-left":["hyprland/workspaces"],
     "modules-center":["custom/mediaL","custom/mediaC","custom/mediaR"],
     "modules-right":[
-        "network",
-        "pulseaudio",
-        "backlight",
-        "battery",
-        "clock",
-        "custom/power"
+      "network",
+      "pulseaudio",
+      "backlight",
+      "battery",
+      "clock",
+      "custom/power"
     ],
 
     // Modules configuration
     "custom/power":{
-        "return-type":"json",
-        "exec-on-event":true,
-        "on-click":
-            "echo $(( $(</tmp/powerCounter.txt) + 1 )) > /tmp/powerCounter.txt",
-        "on-click-right":"~/.config/waybar/powerSel.sh",
-        "interval":"once",
-        "format":"{}",
-        "exec":"~/.config/waybar/powerUp.sh"
+      "return-type":"json",
+      "exec-on-event":true,
+      "on-click":
+      "echo $(( $(</tmp/powerCounter.txt) + 1 )) > /tmp/powerCounter.txt",
+      "on-click-right":"~/.config/waybar/powerSel.sh",
+      "interval":"once",
+      "format":"{}",
+      "exec":"~/.config/waybar/powerUp.sh"
     },
 
     "custom/mediaL":{
-        "return-type":"json",
-        "hide-empty-text":true,
-        "format":"{}",
-        "on-click":"playerctl previous",
-        "on-click-right": "playerctl position 5-",
-        "interval":10,
-        "exec":"~/.config/waybar/musicPlayerL.sh"
+      "return-type":"json",
+      "hide-empty-text":true,
+      "format":"{}",
+      "on-click":"playerctl previous",
+      "on-click-right": "playerctl position 5-",
+      "interval":10,
+      "exec":"~/.config/waybar/musicPlayerL.sh"
     },
     "custom/mediaC":{
-        "return-type":"json",
-        "hide-empty-text":true,
-        "max-length":53,
-        "format":" {} ",
-        "on-click":"playerctl play-pause",
-        "interval":10,
-        "exec-if":"test \"$(playerctl status 2>/dev/null)\" != \"Stopped\"",
-        "exec":"~/.config/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
+      "return-type":"json",
+      "hide-empty-text":true,
+      "max-length":53,
+      "format":" {} ",
+      "on-click":"playerctl play-pause",
+      "interval":10,
+      "exec-if":"test \"$(playerctl status 2>/dev/null)\" != \"Stopped\"",
+      "exec":"~/.config/waybar/musicPlayer.sh | jq --unbuffered --compact-output"
     },
     "custom/mediaR":{
-        "return-type":"json",
-        "hide-empty-text":true,
-        "format":"{}",
-        "on-click":"playerctl next",
-        "on-click-right": "playerctl position 5+",
-        "interval":10,
-        "exec":"~/.config/waybar/musicPlayerR.sh"
+      "return-type":"json",
+      "hide-empty-text":true,
+      "format":"{}",
+      "on-click":"playerctl next",
+      "on-click-right": "playerctl position 5+",
+      "interval":10,
+      "exec":"~/.config/waybar/musicPlayerR.sh"
     },
 
     //"hyprland/window":{
@@ -64,66 +64,66 @@
     //},
 
     "hyprland/workspaces": {
-        "disable-scroll": false,
-        "warp-on-scroll": true,
-        "format": "{name}",
-        "persistent-workspaces":{
-            "1":[],
-            "2":[],
-            "3":[],
-            "4":[],
-            "5":[],
-            "6":[],
-            "7":[],
-            "8":[],
-            "9":[],
-            "10":[]
-        },
-        "format-icons": {
-            "1": "",
-            "2": "",
-            "3": "",
-            "4": "",
-            "5": "",
-            "6": "",
-            "10":"",
-            "urgent": "",
+      "disable-scroll": false,
+      "warp-on-scroll": true,
+      "format": "{name}",
+      "persistent-workspaces":{
+        "1":[],
+        "2":[],
+        "3":[],
+        "4":[],
+        "5":[],
+        "6":[],
+        "7":[],
+        "8":[],
+        "9":[],
+        "10":[]
+      },
+      "format-icons": {
+        "1": "",
+        "2": "",
+        "3": "",
+        "4": "",
+        "5": "",
+        "6": "",
+        "10":"",
+        "urgent": "",
             //"active": "",
             "default": ""
-        }
+      }
 
     },
-    
+
     "keyboard-state": {
-        "numlock": true,
-        "capslock": true,
-        "format": "{name} {icon}",
-        "format-icons": {
-            "locked": "",
-            "unlocked": ""
-        }
+      "numlock": true,
+      "capslock": true,
+      "format": "{name} {icon}",
+      "format-icons": {
+        "locked": "",
+        "unlocked": ""
+      }
     },
-    
+
     "clock": {
-        "timezone":"America/Argentina/Buenos_Aires",
-        "format": "{:%H:%M}",
-        "format-alt": "{:%a,%R,%b %d %Y}",
-        "tooltip-format": "<tt><small>{calendar}</small></tt>",
-        "calendar": {
-                    "mode"          : "month",
-                    "mode-mon-col"  : 3,
-                    "weeks-pos"     : "left",
-                    "format": {
-                              "months":     "<span color='#ffead3'><b>{}</b></span>",
-                              "days":       "<span color='#ecc6d9'><b>{}</b></span>",
-                              "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-                              "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-                              "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
-                              }
-                    },
-        "actions":  {
-                    "on-click-right": "mode"
-                    }
+      "timezone":"America/Argentina/Buenos_Aires",
+      "format": "{:%H:%M}",
+      "format-alt": "{:%a,%R,%b %d %Y}",
+      "tooltip-format": "<tt><small>{calendar}</small></tt>",
+      "calendar": {
+        "mode"          : "month",
+        "mode-mon-col"  : 3,
+        "weeks-pos"     : "left",
+        "format": {
+          "months":     "<span color='#ffead3'><b>{}</b></span>",
+          "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+          "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+          "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+          "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+        }
+      },
+      "actions":  {
+        "on-click-right": "mode"
+      }
     },
 
     "backlight": {
@@ -134,18 +134,18 @@
         "format": "{icon} {percent}%",
         "format-icons": ["", "", "", "", "", "", "", "", ""]
     },
-    
+
     "battery": {
-        "states": {
+      "states": {
             // "good": 95,
             "warning": 30,
             "critical": 20
-        },
-        "format": "{icon}{capacity}%",
-        "format-full": "{icon}{capacity}%",
-        "format-charging": "󰂄{capacity}%",
-        "format-plugged": "{capacity}%",
-        "format-alt": "{time} {icon}",
+      },
+      "format": "{icon}{capacity}%",
+      "format-full": "{icon}{capacity}%",
+      "format-charging": "󰂄{capacity}%",
+      "format-plugged": "{capacity}%",
+      "format-alt": "{time} {icon}",
         // "format-good": "", // An empty format will hide the module
         "format-icons": ["󰂎","󰁺","󰁻","󰁼","󰁽","󰁾","󰁿","󰂀","󰂁","󰂂","󰁹"]
     },
@@ -161,37 +161,37 @@
         "tooltip-format":"{frequency}GHz {ifname}",
         "format-disconnected": "󰤮 Disconected",
         "tooltip-format-disconnected":"",
-        "menu": "on-click",
-		"menu-file": "~/.config/waredMenn.xml",
-		"menu-actions": {
-			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate",
-		}
+        //"menu": "on-click",
+        //"menu-file": "~/.config/waredMenn.xml",
+        //"menu-actions": {
+        //  "shutdown": "shutdown",
+        //  "reboot": "reboot",
+        //  "suspend": "systemctl suspend",
+        //  "hibernate": "systemctl hibernate",
+        //}
     },
 
     "pulseaudio": {
-        "scroll-step": 1, // %, can be a float
-        "tooltip":false,
-        "format": "{icon} {volume}%",
-        "format-bluetooth": "{icon}  {volume}%",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        
-        "format-muted": "󰝟",
-        "format-source": "  {volume}%",
-        "format-source-muted": "",
-        
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        },
-        "on-click": "pavucontrol",
-        "on-click-right":"pactl set-sink-mute @DEFAULT_SINK@ toggle"
+      "scroll-step": 1, // %, can be a float
+      "tooltip":false,
+      "format": "{icon} {volume}%",
+      "format-bluetooth": "{icon}  {volume}%",
+      "format-bluetooth-muted": " {icon} {format_source}",
+
+      "format-muted": "󰝟",
+      "format-source": "  {volume}%",
+      "format-source-muted": "",
+
+      "format-icons": {
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "phone": "",
+        "portable": "",
+        "car": "",
+        "default": ["", "", ""]
+      },
+      "on-click": "pavucontrol",
+      "on-click-right":"pactl set-sink-mute @DEFAULT_SINK@ toggle"
     }
 }

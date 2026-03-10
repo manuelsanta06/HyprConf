@@ -33,6 +33,7 @@ set mouse=a                                 " ni idea
 set foldmethod=indent                       " foldeo en base al indentado
 set foldlevel=999                           " desfoldea todo
 set laststatus=2                            " statusbar on
+set termguicolors
 
 "set statusline=helloworld
 

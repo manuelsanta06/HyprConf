@@ -9,19 +9,14 @@ return {
       { 'L3MON4D3/LuaSnip', version = "v2.*", build = "make install_jsregexp" },
       'rafamadriz/friendly-snippets',
 
-      -- AQUÍ ESTÁ LA MAGIA:
-      -- 1. nvim-cmp depende de nvim-lspconfig
       {
         'neovim/nvim-lspconfig',
+        event = { "BufReadPre", "BufNewFile" },
         
-        -- 2. nvim-lspconfig depende de cmp-nvim-lsp
-        --    (Esto fuerza a cmp-nvim-lsp a cargarse PRIMERO)
         dependencies = {
           'hrsh7th/cmp-nvim-lsp'
         },
         
-        -- 3. La config de lspconfig (lsp.lua) ahora se ejecuta
-        --    DESPUÉS de que cmp-nvim-lsp esté cargado y listo.
         config = function()
           require("santa.config.lsp")
         end
@@ -29,27 +24,25 @@ return {
     },
     
     config = function()
-      -- 4. La config de cmp se ejecuta al FINAL de todo,
-      --    cuando lsp.lua ya terminó y todo está listo.
       require("santa.config.cmp-config") 
     end
   },
 
-  -- Treesitter (coloreado + parser inteligente)
   { 
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     config = function()
       require("nvim-treesitter.configs").setup({
-        -- Asegúrate de tener estos dos parsers
         ensure_installed = {
           "c",
           "lua",
           "vim",
           "vimdoc",
           "query",
-          "markdown", -- <-- Este
-          "markdown_inline", -- <-- Y este
+          "markdown",
+          "markdown_inline",
+          "go",
+          "gomod"
         },
         sync_install = false,
         auto_install = true,
@@ -66,6 +59,7 @@ return {
   -- Integración Flutter
   {
     'akinsho/flutter-tools.nvim',
+    ft="dart",
     dependencies = { 'nvim-lua/plenary.nvim', 'stevearc/dressing.nvim' },
     
     config = function()

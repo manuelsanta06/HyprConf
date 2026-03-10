@@ -5,21 +5,35 @@ if [ "$val" == "" ]; then
 fi
 
 case "$val" in
-    "0")
-        rWallpaper.sh
-        ;;
-    "1")
-        systemctl reboot --boot-loader-entry=auto-windows
-        ;;
-    "2")
-        systemctl poweroff
-        ;;
-    "3")
-        reboot
-        ;;
-    "4")
-        systemctl suspend
-        ;;
-    *)
-        echo 0 > /tmp/powerCounter.txt
+  "0")
+    rWallpaper.sh
+    ;;
+  "1")
+    systemctl poweroff
+    ;;
+  "2")
+    reboot
+    ;;
+  "3")
+    systemctl hibernate
+    ;;
+  "4")
+    #POWER PROFILES HERE
+    PROFILES=("power-saver" "balanced" "performance")
+    CURRENT_PROFILE=$(powerprofilesctl get)
+    for i in "${!PROFILES[@]}"; do
+        if [[ "${PROFILES[$i]}" == "$CURRENT_PROFILE" ]]; then
+            CURRENT_INDEX=$i
+            break
+        fi
+    done
+    NEXT_PROFILE="${PROFILES[$(((CURRENT_INDEX+1)%${#PROFILES[@]}))]}"
+
+    powerprofilesctl set "$NEXT_PROFILE"
+    ;;
+  "5")
+    systemctl reboot --boot-loader-entry=auto-windows
+    ;;
+  *)
+    echo 0 > /tmp/powerCounter.txt
 esac

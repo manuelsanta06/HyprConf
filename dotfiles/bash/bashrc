@@ -8,6 +8,7 @@ source /usr/share/fzf/completion.bash
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 export PATH="$PATH:$HOME/clons/flutter/bin"
+export EDITOR='nvim'
 
 
 alias get_idf='. $HOME/clons/esp-idf/export.sh; alias idf="idf.py";alias build="time idf.py build"; alias fullclean="idf.py fullclean"'
@@ -17,15 +18,15 @@ alias log="git log --all --decorate --oneline --graph"
 alias steamopen='xdg-open steam://rungameid/'
 alias grep='grep --color=auto'
 alias ls='ls --color=auto'
-alias cls='clear'
+alias cls='clear; fastfetch'
 alias please='sudo'
 alias pls='sudo'
 alias ln='ln -s'
 alias :q='exit'
 
 scd(){
-    [[ -n "$1" ]] && echo "$1" > /tmp/scdf
-    cd $(cat /tmp/scdf)
+    [[ -n "$1" ]] && realpath "$1" > /tmp/scdf
+    cd "$(cat /tmp/scdf)"
 }
 
 CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"

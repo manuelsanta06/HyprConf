@@ -1,0 +1,24 @@
+[global]
+font = "FiraCode Nerd Font 10"
+min_icon_size = 64
+max_icon_size = 64
+offset = (10, 20)
+width = (300, 500)
+follow = mouse
+frame_color = "#89b4fa"
+separator_color= frame
+highlight = "#89b4fa"
+
+[urgency_low]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+
+[urgency_normal]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+frame_color = "#fc6601"
+
+[urgency_critical]
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+frame_color = "#ff0000"
