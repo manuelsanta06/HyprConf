@@ -8,6 +8,7 @@ source /usr/share/fzf/completion.bash
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 export PATH="$PATH:$HOME/clons/flutter/bin"
+export PATH="$HOME/.local/bin:$PATH"
 export EDITOR='nvim'
 
 

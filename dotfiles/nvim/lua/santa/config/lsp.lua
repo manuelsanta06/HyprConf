@@ -19,6 +19,13 @@ setup_server("clangd", {
 -- Go
 setup_server("gopls", {})
 
+--qml/qt
+setup_server("qmlls", {
+  cmd = { "qmlls6", "-E" },
+  filetypes = { "qml", "qmljs" },
+  root_dir = vim.fs.root(0, { ".qmlls.ini", ".git" })
+})
+
 -- Python
 setup_server("pyright", {})
 

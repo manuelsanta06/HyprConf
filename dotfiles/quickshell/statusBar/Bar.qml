@@ -1,0 +1,102 @@
+import Quickshell
+import Quickshell.Wayland
+import QtQuick
+import QtQuick.Layouts
+
+PanelWindow {
+  id: root
+  //Tunables
+  readonly property int hideDelayMs:500
+  readonly property int revealMs:200
+  readonly property int barWidth:220
+  readonly property int triggerPx:4 
+  readonly property int hideMs:300
+
+
+  required property var screen
+
+  // Layer-shell config
+  aboveWindows:true
+  exclusionMode:ExclusionMode.Ignore
+
+  anchors{left:true;top:true;bottom:true;}
+
+  // width:barWidth
+  implicitWidth:(root.revealed||xAnim.running)?root.barWidth:root.triggerPx
+  color:"transparent"
+
+
+  property bool revealed:false
+
+  //Auto-hide timer
+  Timer{
+    id:hideTimer
+    interval:root.hideDelayMs
+    repeat:false
+    onTriggered:root.revealed=false
+  }
+
+  HoverHandler{
+    id:rootHover
+    onHoveredChanged:{
+      if(hovered){hideTimer.stop();root.revealed=true;}
+      else{hideTimer.restart();}
+    }
+  }
+
+  //Bar panel
+  Rectangle{
+    id:barBody
+    color:"#0f0f14"
+
+    x:root.revealed?0:-root.barWidth
+    y:0
+    width:root.barWidth
+    height:root.height
+    clip:true
+
+
+    Behavior on x{
+      NumberAnimation{
+        id: xAnim
+        duration:root.revealed?root.revealMs:root.hideMs
+        easing.type:Easing.InOutQuart
+      }
+    }
+    Rectangle{
+      anchors{right:parent.right;top:parent.top;bottom:parent.bottom}
+      width:1
+      color:"#44ffffff"
+    }
+
+    // ---CONTENT------------------------------------------------------------
+    ColumnLayout{
+      anchors{fill:parent;margins:12;}
+      spacing:8
+
+      // TOP
+      Item{
+        Layout.fillWidth:true
+        implicitHeight:40
+        Text{
+          anchors.centerIn:parent
+          text:""
+          font.pixelSize:30
+          color:"#1793d1"
+        }
+      }
+
+      Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
+      MediaPLayer{}
+
+      // MIDDLE – add modules here
+      Item{Layout.fillHeight:true}
+      Item{Layout.fillHeight:true}
+
+      // BOTTOM
+      Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
+      Baterry{}
+      Clock{textBottom:true}
+    }
+  }
+}
