@@ -174,7 +174,10 @@ ExpandableModule{
               anchors.bottom:parent.bottom
               anchors.margins:2
               width:(parent.width - (anchors.margins * 2)) * (UPower.displayDevice.percentage)
-              color:"#a6e3a1"
+              color:UPower.displayDevice.state==1?"#00ffff":
+                UPower.displayDevice.state==4?"#8806ce":
+                UPower.displayDevice.percentage<0.2?"#ff0000":
+                "#a6e3a1"
               radius:1
             }
           }
