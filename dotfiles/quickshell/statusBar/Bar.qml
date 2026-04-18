@@ -75,26 +75,18 @@ PanelWindow {
       spacing:8
 
       // TOP
-      Item{
-        Layout.fillWidth:true
-        implicitHeight:40
-        Text{
-          anchors.centerIn:parent
-          text:""
-          font.pixelSize:30
-          color:"#1793d1"
-        }
-      }
+      Options{}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
       MediaPLayer{}
 
-      // MIDDLE – add modules here
+      // MIDDLE
       Item{Layout.fillHeight:true}
       Item{Layout.fillHeight:true}
 
       // BOTTOM
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
+      NetworkWidget{}
       Baterry{}
       Clock{textBottom:true}
     }

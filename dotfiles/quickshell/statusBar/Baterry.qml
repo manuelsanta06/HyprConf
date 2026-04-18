@@ -177,7 +177,7 @@ ExpandableModule{
               color:UPower.displayDevice.state==1?"#00ffff":
                 UPower.displayDevice.state==4?"#8806ce":
                 UPower.displayDevice.percentage<0.2?"#ff0000":
-                "#a6e3a1"
+                "#00ff00"
               radius:1
             }
           }
