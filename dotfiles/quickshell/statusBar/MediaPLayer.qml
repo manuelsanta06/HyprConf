@@ -134,10 +134,9 @@ ExpandableModule{
             MouseArea{anchors.fill:parent;onClicked:(mouse)=>{if(mediaModule.player)mediaModule.player.previous();mouse.accepted=true}}
           }
           
-          //Play/Pausa (Dinámico)
+          //Play/Pausa
           Text{
-            // 1 significa reproduciendo en MPRIS
-            text:(mediaModule.player&&mediaModule.player.playbackStatus===1)?"󰏤":"󰐊"
+            text:(mediaModule.player&&mediaModule.player.playbackState==MprisPlaybackState.Playing)?"󰏤":"󰐊"
             font.pixelSize:22
             color:hPlay.hovered?"#89b4fa":"#cdd6f4"
             HoverHandler{id:hPlay}

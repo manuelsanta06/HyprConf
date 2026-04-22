@@ -15,7 +15,7 @@ ExpandableModule{
   expandedHeight:200
 
   property var last7Days:[0,0,0,0,0,0,0]
-  property int currentStreak:14
+  property int currentStreak:0
 
   function getCommitColor(commits){
     if(commits===0)return "#161b22"
