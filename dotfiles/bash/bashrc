@@ -2,8 +2,10 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-source /usr/share/fzf/key-bindings.bash
-source /usr/share/fzf/completion.bash
+# source /usr/share/fzf/key-bindings.bash
+# source /usr/share/fzf/completion.bash
+source $HOME/resources/dotfiles/bash/lessConf.sh
+source $HOME/resources/dotfiles/bash/aliases.sh
 
 export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
@@ -12,18 +14,6 @@ export PATH="$HOME/.local/bin:$PATH"
 export EDITOR='nvim'
 
 
-alias get_idf='. $HOME/clons/esp-idf/export.sh; alias idf="idf.py";alias build="time idf.py build"; alias fullclean="idf.py fullclean"'
-
-
-alias log="git log --all --decorate --oneline --graph"
-alias steamopen='xdg-open steam://rungameid/'
-alias grep='grep --color=auto'
-alias ls='ls --color=auto'
-alias cls='clear; fastfetch'
-alias please='sudo'
-alias pls='sudo'
-alias ln='ln -s'
-alias :q='exit'
 
 scd(){
     [[ -n "$1" ]] && realpath "$1" > /tmp/scdf
@@ -36,50 +26,36 @@ random_char() {
     echo -n "${CHARS:RANDOM % ${#CHARS}:1}"
 }
 
-setcolor() {
-    # Restablecer colores si no hay argumentos
-    if [ -z "$1" ]; then
-        echo -n "$(tput sgr0)"
-        return 0
-    fi
-    # Validar que los argumentos sean números
-    if ! [[ "$1" =~ ^[0-9]+$ ]]; then
-        echo "Error: El primer argumento debe ser un número (color de texto)." >&2
-        return -1
-    fi
 
-    echo -n "$(tput setaf "$1")"
-
-    if [ -n "$2" ]; then
-        if ! [[ "$2" =~ ^[0-9]+$ ]]; then
-            echo "Error: El segundo argumento debe ser un número (color de fondo)." >&2
-            return -1
-        fi
-        echo -n "$(tput setab "$2")"
-    fi
-}
-
-
+#Foreground
+#\e[38;5;{}m
+#Background
+#\e[48;5;{}m
+#clean
+#\e[0m
 build_prompt() {
-    local on_git_repo="$(git rev-parse --is-inside-work-tree 2> /dev/null)"
-    local git_branch
-    [[ "$on_git_repo" == "true" ]] &&
-        git_branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+  local error=$?
+  local on_git_repo="$(git rev-parse --is-inside-work-tree 2> /dev/null)"
 
-    local prompt=""
-    prompt+="\[$(setcolor 255)\]\[$(setcolor 0)\] \[$(setcolor 4 0)\]   "
+  local bgColor=0
+  local fgColor=4
+  if [[ $error != 0 ]]; then
+    local bgColor=9
+    local fgColor=0
+  fi
 
-    if [[ "$on_git_repo" == "true" ]]; then
-        prompt+="\[$(setcolor 0 202)\]"
-        prompt+="\[$(setcolor 0 202)\] ${git_branch} "
-        prompt+="\[$(setcolor 202 4)\]"
-    else
-        prompt+="\[$(setcolor 0 4)\]"
-    fi
+  PS1="\[\e[38;5;255m\]\[\e[38;5;${bgColor}m\] \[\e[38;5;${fgColor}m\e[48;5;${bgColor}m\]"
+  [[ $error != 0 ]] &&
+    PS1+=" $error " ||
+    PS1+="   "
 
-    prompt+="\[$(setcolor 0 4)\] $(random_char)  \\W \[$(setcolor)\]\[$(setcolor 4)\] \[$(setcolor)\]"
+  if [[ "$on_git_repo" == "true" ]]; then
+    PS1+="\[\e[38;5;${bgColor}m\e[48;5;202m\] \e[38;5;0m$(git rev-parse --abbrev-ref HEAD 2>/dev/null) \[\e[38;5;202m\e[48;5;4m\]"
+  else
+    PS1+="\[\e[38;5;${bgColor}m\e[48;5;4m\]"
+  fi
 
-    PS1="${prompt}"
+  PS1+="\[\e[38;5;0m\e[48;5;4m\] $(random_char)  \\W \[\e[0m\]\[\e[38;5;4m\] \[\e[0m\]"
 }
 
 PROMPT_COMMAND=build_prompt
