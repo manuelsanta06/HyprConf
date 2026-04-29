@@ -2,23 +2,21 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
-# source /usr/share/fzf/key-bindings.bash
-# source /usr/share/fzf/completion.bash
 source $HOME/resources/dotfiles/bash/lessConf.sh
 source $HOME/resources/dotfiles/bash/aliases.sh
 
-export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export ANDROID_SDK_ROOT="$HOME/clons/Android/Sdk"
 export PATH="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/tools/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH"
 export PATH="$PATH:$HOME/clons/flutter/bin"
 export PATH="$HOME/.local/bin:$PATH"
 export EDITOR='nvim'
 
 
-
 scd(){
     [[ -n "$1" ]] && realpath "$1" > /tmp/scdf
     cd "$(cat /tmp/scdf)"
 }
+bind '"\ew":"scd ./\n"'
 
 CHARS="󰮯󰊠󱙝󰍳󰛡󰞶󰄛󰩃󰧻󰡚󰣎󰭟󱡂󰊴"
 
