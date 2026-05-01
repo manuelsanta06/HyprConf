@@ -48,12 +48,12 @@ build_prompt() {
     PS1+="   "
 
   if [[ "$on_git_repo" == "true" ]]; then
-    PS1+="\[\e[38;5;${bgColor}m\e[48;5;202m\] \e[38;5;0m$(git rev-parse --abbrev-ref HEAD 2>/dev/null) \[\e[38;5;202m\e[48;5;4m\]"
+    PS1+="\[\e[38;5;${bgColor}m\e[48;5;202m\] \[\e[38;5;0m\]$(git rev-parse --abbrev-ref HEAD 2>/dev/null) \[\e[38;5;202m\e[48;5;4m\]"
   else
     PS1+="\[\e[38;5;${bgColor}m\e[48;5;4m\]"
   fi
 
-  PS1+="\[\e[38;5;0m\e[48;5;4m\] $(random_char)  \\W \[\e[0m\]\[\e[38;5;4m\] \[\e[0m\]"
+  PS1+="\[\e[38;5;0m\e[48;5;4m\] $(random_char)  \\W \[\e[0m\e[38;5;4m\] \[\e[0m\]"
 }
 
 PROMPT_COMMAND=build_prompt
