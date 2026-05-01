@@ -5,6 +5,6 @@ ShellRoot {
   // Spawn one Bar per screen
   Variants {
     model: Quickshell.screens
-    Bar{screen:modelData}
+    StatusBar{screen:modelData}
   }
 }

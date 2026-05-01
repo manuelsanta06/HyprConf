@@ -4,8 +4,6 @@ import Quickshell.Io
 
 Item {
   id: root
-  
-  // Medidas consistentes con la barra
   Layout.fillWidth: true
   implicitHeight: 45
 

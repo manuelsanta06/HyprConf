@@ -2,5 +2,6 @@ import Quickshell
 import Quickshell.Hyprland
 
 ShellRoot{
-  AllOsd{}
+    VolumeBar{}
+    BrightnessBar{}
 }
