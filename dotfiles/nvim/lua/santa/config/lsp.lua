@@ -27,7 +27,7 @@ setup_server("qmlls", {
 })
 
 -- Python
-setup_server("pyright", {})
+setup_server("pyright",{})
 
 -- TypeScript
 setup_server("ts_ls", {})

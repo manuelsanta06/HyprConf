@@ -52,7 +52,7 @@ PanelWindow{
       }
     }
   }
-  OsdModule{
+  OsdBar{
     id:osd
     position:"right"
     percentage:Math.round((brightnessOsdWindow.brightness/brightnessOsdWindow.maxBrightness)*100)

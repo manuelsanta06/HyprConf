@@ -27,7 +27,7 @@ PanelWindow {
     function onMutedChanged(){osd.triggerShow()}
   }
 
-  OsdModule{
+  OsdBar{
     id:osd
     position:"right"
     percentage:Math.round((isNaN(volumeOsdWindow.vol)?0:volumeOsdWindow.vol)*100)
