@@ -35,6 +35,20 @@ setup_server("ts_ls", {})
 -- CSS
 setup_server("cssls", {})
 
+-- Lua (lua_ls)/Hyprland
+setup_server("lua_ls",{
+  settings={
+    Lua={
+      workspace={
+        library={"/usr/share/hypr/stubs"}
+      },
+      diagnostics={
+        globals={"hl"}
+      }
+    }
+  }
+})
+
 
 vim.diagnostic.config({
   virtual_text = false,
