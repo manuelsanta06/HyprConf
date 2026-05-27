@@ -77,7 +77,7 @@ ShellRoot{
   function launchSelectedApp(execCommand){
     if(!execCommand)return
     appRunner.running=false
-    appRunner.command=["sh","-c",execCommand]
+    appRunner.command=["sh","-c","setsid "+execCommand+" </dev/null >/dev/null 2>&1 &"]
     appRunner.running=true
     launcher.hide()
     resetLauncher()
@@ -228,7 +228,8 @@ ShellRoot{
 
               IconImage{
                 implicitSize:28
-                source:Quickshell.iconPath(appIcon,"application-x-executable")
+                source:Quickshell.iconPath(appIcon,"archlinux-logo")
+                color:"transparent"
                 Layout.alignment:Qt.AlignVCenter
               }
 
