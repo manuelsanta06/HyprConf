@@ -76,6 +76,7 @@ ShellRoot{
 
   function launchSelectedApp(execCommand){
     if(!execCommand)return
+    appRunner.running=false
     appRunner.command=["sh","-c",execCommand]
     appRunner.running=true
     launcher.hide()
@@ -85,18 +86,22 @@ ShellRoot{
   PanelWindow{
     id:launcherWindow
     visible:launcher.isOsdActive
-    implicitWidth:launcher.width
-    implicitHeight:launcher.height
+    implicitWidth:Screen.width
+    implicitHeight:Screen.height
     color:"transparent"
     focusable:true
     aboveWindows:true
     exclusionMode:ExclusionMode.Ignore
 
-    anchors{top:true}
-    margins{left:Screen.width/2-launcher.width/2;top:0}
-
     onVisibleChanged:{
       if(visible)Qt.callLater(function(){searchInput.forceActiveFocus()})
+    }
+    MouseArea{
+      anchors.fill:parent
+      onClicked:{
+        launcher.hide()
+        resetLauncher()
+      }
     }
 
     OsdBase{
@@ -106,6 +111,16 @@ ShellRoot{
       backgroundColor:"#1b1b29"
       width:520
       height:85+Math.min(resultsList.count*55,500)
+
+      anchors.top: parent.top
+      anchors.horizontalCenter: parent.horizontalCenter
+
+      Behavior on height {
+        NumberAnimation {
+          duration:300
+          easing.type:Easing.OutQuad
+        }
+      }
 
       ColumnLayout{
         anchors.fill:parent
@@ -156,6 +171,11 @@ ShellRoot{
           Keys.onReturnPressed:{
             if(resultsList.count>0){
               launchSelectedApp(resultsList.model[0].exec)
+            }else{
+              let customCommand=searchInput.text.trim()
+              if(customCommand.length>0){
+                launchSelectedApp(customCommand +" &")
+              }
             }
           }
         }

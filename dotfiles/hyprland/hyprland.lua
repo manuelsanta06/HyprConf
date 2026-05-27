@@ -9,8 +9,9 @@ hl.on("hyprland.start",function()
   hl.exec_cmd("adb start-server")
   hl.exec_cmd(terminal)
   hl.exec_cmd("quickshell")
-  hl.exec_cmd("wl-paste --watch cliphist store")
+  hl.exec_cmd("bombini -d")
   hl.exec_cmd("dunst > /tmp/dbustlog.txt")
+  -- hl.exec_cmd("wl-paste --watch cliphist store")
 
   -- Banana cursor
   hl.exec_cmd("hyprctl setcursor Banana 48")
