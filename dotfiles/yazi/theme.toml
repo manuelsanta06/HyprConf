@@ -1,6 +1,6 @@
-
 [mode]
 normal_main = { fg = "#ffffff", bg = "#8f00ff", bold = true }
+select_main = { fg = "#ffffff", bg = "#0000ff", bold = true }
 
 [status]
 progress_label  = { fg = "#ffffff", bold = true }

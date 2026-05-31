@@ -19,7 +19,6 @@ hl.bind(mainMod.." + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod.." + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod.." + W", hl.dsp.exec_cmd(terminal..' -d "$(cat /tmp/scdf)"'))
 
-hl.bind("SUPER + SHIFT + A", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod.." + SPACE", hl.dsp.global("quickshell:launcher"))
 
 hl.bind(mainMod.." + B", hl.dsp.exec_cmd('kitty --class "kitty-monitor" -o background_opacity=0.5 -e btop -l -p 2'))

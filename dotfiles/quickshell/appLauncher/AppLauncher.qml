@@ -229,7 +229,6 @@ ShellRoot{
               IconImage{
                 implicitSize:28
                 source:Quickshell.iconPath(appIcon,"archlinux-logo")
-                color:"transparent"
                 Layout.alignment:Qt.AlignVCenter
               }
 

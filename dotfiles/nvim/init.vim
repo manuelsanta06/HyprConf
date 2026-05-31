@@ -43,5 +43,8 @@ set runtimepath+=~/.local/share/nvim/site
 set runtimepath+=~/.local/share/nvim/site/pack/hig++/
 
 set clipboard+=unnamedplus
+
+"prevent fake tabs on Makefile and automake
+autocmd FileType make,automake set noexpandtab shiftwidth=8 softtabstop=8
 "esto hace que la ventana se llame como el archivo
 autocmd BufEnter * let &titlestring=expand('%:t')
