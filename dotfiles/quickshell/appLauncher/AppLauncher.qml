@@ -56,7 +56,8 @@ ShellRoot{
 
   Timer{
     id:debounceTimer
-    interval:150
+    //replace '0' with something like 150 quickshell struggles to show the app list
+    interval:0
     repeat:false
     onTriggered:{
       let query=searchInput.text.trim()
@@ -163,14 +164,20 @@ ShellRoot{
             launcher.hide()
             resetLauncher()
           }
+          Keys.onUpPressed:{
+            if(resultsList.count > 0){
+              resultsList.decrementCurrentIndex()
+            }
+          }
           Keys.onDownPressed:{
             if(resultsList.count>0){
-              resultsList.forceActiveFocus()
+              // resultsList.forceActiveFocus()
+              resultsList.incrementCurrentIndex()
             }
           }
           Keys.onReturnPressed:{
             if(resultsList.count>0){
-              launchSelectedApp(resultsList.model[0].exec)
+              launchSelectedApp(resultsList.model[resultsList.currentIndex].exec)
             }else{
               let customCommand=searchInput.text.trim()
               if(customCommand.length>0){
@@ -190,21 +197,6 @@ ShellRoot{
           
           highlightMoveDuration:150
           highlight:Rectangle{color:"#1793D1";radius:8}
-
-          Keys.onUpPressed:{
-            if(resultsList.currentIndex<=0){
-              searchInput.forceActiveFocus()
-            }else{
-              resultsList.decrementCurrentIndex()
-            }
-          }
-          Keys.onReturnPressed:{
-            launchSelectedApp(resultsList.model[resultsList.currentIndex].exec)
-          }
-          Keys.onEscapePressed:{
-            launcher.hide()
-            resetLauncher()
-          }
 
           delegate:ItemDelegate{
             width:resultsList.width
