@@ -1,24 +1,31 @@
 [global]
-font = "FiraCode Nerd Font 10"
+# Usa la fuente que hayas instalado
+font = "Monocraft-nerd-fonts-patched.ttc 10"
 min_icon_size = 64
 max_icon_size = 64
-offset = (10, 20)
+# Las notificaciones de Minecraft suelen salir arriba a la derecha
+offset = (20, 20)
+origin = top-right
 width = (300, 500)
 follow = mouse
-frame_color = "#89b4fa"
-separator_color= frame
-highlight = "#89b4fa"
+
+# Colores de la UI de Minecraft (Gris oscuro con borde más claro)
+frame_color = "#373737"
+frame_width = 3
+separator_color = frame
+
+# Formato: Título en amarillo (como los logros), cuerpo en blanco
+format = "<b><span color='#FFFF55'>%s</span></b>\n%b"
 
 [urgency_low]
-background = "#1e1e2e"
-foreground = "#cdd6f4"
+background = "#212121"
+foreground = "#FFFFFF"
 
 [urgency_normal]
-background = "#1e1e2e"
-foreground = "#cdd6f4"
-frame_color = "#fc6601"
+background = "#212121"
+foreground = "#FFFFFF"
 
 [urgency_critical]
-background = "#1e1e2e"
-foreground = "#cdd6f4"
-frame_color = "#ff0000"
+background = "#212121"
+foreground = "#FF5555"
+frame_color = "#AA0000"
