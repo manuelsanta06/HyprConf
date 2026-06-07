@@ -11,7 +11,7 @@ hl.on("hyprland.start",function()
   hl.exec_cmd("bombini -d")
   hl.exec_cmd("quickshell")
   
-  hl.exec_cmd('batsignal -w 25 -c 15 -f 99 -d 5 -D "systemctl suspend"')
+  hl.exec_cmd('batsignal -w 25 -c 15 -d 5 -D "systemctl suspend"')
   -- hl.exec_cmd("wl-paste --watch cliphist store")
 
   -- Banana cursor
