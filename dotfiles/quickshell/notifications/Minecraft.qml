@@ -58,7 +58,7 @@ PanelWindow{
     right:rightMargin
   }
   implicitWidth:toastWidth
-  implicitHeight:(toastHeight+gap)*maxVisible
+  implicitHeight:(toastHeight+gap)*notifications.length
   color:"transparent"
   exclusionMode:ExclusionMode.Ignore
 
