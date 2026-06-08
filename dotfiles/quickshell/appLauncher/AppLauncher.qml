@@ -54,6 +54,34 @@ ShellRoot{
     running:false
   }
 
+  function handleDefaultSearch(query){
+    appSearcher.command=["bombini",query]
+    appSearcher.running=true
+  }
+  function handleMath(expression){
+    if (expression.length===0){
+      resultsList.model=[]
+      return
+    }
+    
+    try{
+      let result=eval(expression)
+      
+      resultsList.model=[{
+        name:expression+" = "+result,
+        exec:"wl-copy '"+result+"'", 
+        icon:"/usr/share/icons/Adwaita/symbolic/legacy/accessories-calculator-symbolic.svg"
+      }]
+      resultsList.currentIndex=0
+    }catch(e){
+      resultsList.model = [{
+        name: "Keep typing...",
+        exec: "",
+        icon: "/usr/share/icons/Adwaita/symbolic/status/dialog-question-symbolic"
+      }]
+    }
+  }
+
   Timer{
     id:debounceTimer
     //replace '0' with something like 150 quickshell struggles to show the app list
@@ -61,11 +89,17 @@ ShellRoot{
     repeat:false
     onTriggered:{
       let query=searchInput.text.trim()
-      if(query.length>0){
-        appSearcher.command=["bombini",query]
-        appSearcher.running=true
-      }else{
+      if(query.length<=0){
         resultsList.model=[]
+        return
+      }
+      switch(query[0]){
+        case '=':
+          handleMath(query.substring(1).trim())
+          break
+        default:
+          handleDefaultSearch(query)
+          break
       }
     }
   }
@@ -116,8 +150,8 @@ ShellRoot{
       anchors.top: parent.top
       anchors.horizontalCenter: parent.horizontalCenter
 
-      Behavior on height {
-        NumberAnimation {
+      Behavior on height{
+        NumberAnimation{
           duration:300
           easing.type:Easing.OutQuad
         }
@@ -165,13 +199,12 @@ ShellRoot{
             resetLauncher()
           }
           Keys.onUpPressed:{
-            if(resultsList.count > 0){
+            if(resultsList.count>0){
               resultsList.decrementCurrentIndex()
             }
           }
           Keys.onDownPressed:{
             if(resultsList.count>0){
-              // resultsList.forceActiveFocus()
               resultsList.incrementCurrentIndex()
             }
           }
