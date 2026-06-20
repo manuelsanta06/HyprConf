@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
 
+
 ShellRoot{
   GlobalShortcut{
     name:"launcher"
@@ -77,7 +78,7 @@ ShellRoot{
       resultsList.model = [{
         name: "Keep typing...",
         exec: "",
-        icon: "/usr/share/icons/Adwaita/symbolic/status/dialog-question-symbolic"
+        icon: "/usr/share/icons/Adwaita/symbolic/legacy/accessories-calculator-symbolic.svg"
       }]
     }
   }
