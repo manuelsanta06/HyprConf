@@ -59,6 +59,25 @@ ShellRoot{
     appSearcher.command=["bombini",query]
     appSearcher.running=true
   }
+  function handleWebSearch(query){
+    if (query.length === 0){
+      resultsList.model = [{
+        name: "Web search...",
+        exec: "",
+        icon: "/usr/share/icons/Adwaita/symbolic/legacy/web-browser-symbolic"
+      }]
+      return
+    }
+    
+    let url = "https://www.google.com/search?q=" + encodeURIComponent(query)
+
+    resultsList.model = [{
+      name: 'Web search: "' + query + '"',
+      exec: 'xdg-open "' + url + '"', 
+      icon: "/usr/share/icons/Adwaita/symbolic/legacy/web-browser-symbolic"
+    }]
+    resultsList.currentIndex = 0
+  }
   function handleMath(expression){
     if (expression.length===0){
       resultsList.model=[]
@@ -85,7 +104,7 @@ ShellRoot{
 
   Timer{
     id:debounceTimer
-    //replace '0' with something like 150 quickshell struggles to show the app list
+    //replace '0' with something like 150 if quickshell struggles to show the app list
     interval:0
     repeat:false
     onTriggered:{
@@ -97,6 +116,9 @@ ShellRoot{
       switch(query[0]){
         case '=':
           handleMath(query.substring(1).trim())
+          break
+        case '?':
+          handleWebSearch(query.substring(1).trim())
           break
         default:
           handleDefaultSearch(query)

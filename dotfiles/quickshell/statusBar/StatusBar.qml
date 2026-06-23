@@ -13,7 +13,8 @@ PanelWindow {
   readonly property int hideMs:300
 
 
-  required property var screen
+  required property var modelData
+  screen: modelData
 
   // Layer-shell config
   aboveWindows:true
