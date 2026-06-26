@@ -14,6 +14,9 @@ hl.on("hyprland.start",function()
   hl.exec_cmd('batsignal -w 25 -c 15 -d 5 -D "systemctl suspend"')
   -- hl.exec_cmd("wl-paste --watch cliphist store")
 
+  hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+  hl.exec_cmd("systemctl --user start hyprland-session.target")
+
   -- Banana cursor
   hl.exec_cmd("hyprctl setcursor Banana 48")
 end)

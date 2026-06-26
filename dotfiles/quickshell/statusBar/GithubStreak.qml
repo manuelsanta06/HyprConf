@@ -87,7 +87,7 @@ ExpandableModule{
               Layout.alignment:Qt.AlignHCenter
             }
             Text{
-              text:"Racha"
+              text:"Streak"
               color:"#a6adc8"
               font.pixelSize:circleBox.width*0.12
               Layout.alignment:Qt.AlignHCenter
