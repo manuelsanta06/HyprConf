@@ -1,2 +1,2 @@
 # HyprConf
-my hyprland config
+my hyprland/arch config
