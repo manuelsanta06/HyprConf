@@ -8,7 +8,7 @@ hl.on("hyprland.start",function()
   hl.exec_cmd(terminal)
   hl.exec_cmd("awww-daemon")
   hl.exec_cmd("adb start-server")
-  hl.exec_cmd("bombini -d")
+  hl.exec_cmd("bombini -T \"kitty -e\" -d")
   hl.exec_cmd("quickshell")
   
   hl.exec_cmd('batsignal -w 25 -c 15 -d 5 -D "systemctl suspend"')
