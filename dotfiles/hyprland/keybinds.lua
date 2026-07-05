@@ -64,11 +64,14 @@ for i = 1, 10 do
 end
 
 -- Special workspaces
-hl.bind(mainMod.." + TAB", hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod.." + SHIFT + TAB", hl.dsp.window.move({ workspace = "special:magic" }))
+hl.bind(mainMod.." + TAB", hl.dsp.workspace.toggle_special("browser"))
+hl.bind(mainMod.." + SHIFT + TAB", hl.dsp.window.move({ workspace = "special:browser" }))
 
-hl.bind(mainMod.." + Hyper_L", hl.dsp.workspace.toggle_special("magic:second"))
-hl.bind(mainMod.." + SHIFT + Hyper_L", hl.dsp.window.move({ workspace = "special:magic:second" }))
+hl.bind(mainMod.." + Hyper_L", hl.dsp.workspace.toggle_special("compile"))
+hl.bind(mainMod.." + SHIFT + Hyper_L", hl.dsp.window.move({ workspace = "special:compile" }))
+
+hl.bind(mainMod.." + grave", hl.dsp.workspace.toggle_special("games"))
+hl.bind(mainMod.." + SHIFT + grave", hl.dsp.window.move({ workspace = "special:games" }))
 
 -- Mouse binds
 hl.bind(mainMod.." + mouse:272", hl.dsp.window.drag(),   { mouse = true })

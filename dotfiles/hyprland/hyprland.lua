@@ -6,6 +6,8 @@ local menu        ="~/.config/rofi/launcher.sh"
 -- AUTOSTART
 hl.on("hyprland.start",function()
   hl.exec_cmd(terminal)
+  hl.exec_cmd("[workspace special:browser silent] /opt/zen-browser/zen")
+
   hl.exec_cmd("awww-daemon")
   hl.exec_cmd("adb start-server")
   hl.exec_cmd("bombini -T \"kitty -e\" -d")
