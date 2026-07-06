@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+import Quickshell
 import QtQuick
 import Quickshell.Io
 import QtQuick.Layouts
@@ -21,28 +22,69 @@ ExpandableModule{
 
   clickeable:true
   hideColapsed:false
+  textOnBottom:false
   collapsedHeight:75
-  expandedHeight:150
-  property string savedArtUrl: ""
+  expandedHeight:75
+  property string savedArtUrl:""
   property string dominantColor:"#181825"
   backgroundColor:mediaModule.dominantColor
 
-  Process {
-    id: colorExtractor
+  property int cavaBars:30
+  property real cavaGain: 1.8
+  property var audioLevels:Array(cavaBars).fill(0)
+
+  Process{
+    id:cavaProcess
+    command:["cava","-p",Quickshell.shellPath("extras/cava.conf")]
+    running:mediaModule.expanded
+
+    stdout:SplitParser{
+      onRead:(data)=>{
+        let frames=data.toString().trim().split(/\r?\n/).filter(frame=>frame.length>0);
+        if(frames.length===0)return;
+        let values=frames[frames.length-1].split(";").filter(value=>value.length>0);
+        let half=mediaModule.cavaBars/2;
+        if(values.length<half)return;
+        
+        let halfLevels=[];
+        for(let i=0;i<half;i++){
+          let level=Number(values[i]);
+          if(!isNaN(level))halfLevels.push(Math.max(0,Math.min(1,(level/100)*mediaModule.cavaGain)));
+        }
+
+        let newLevels=[];
+        for(let i=half-1;i>=0;i--)newLevels.push(halfLevels[i]);
+        for(let i=0;i<half;i++)newLevels.push(halfLevels[i]);
+
+        mediaModule.audioLevels=newLevels;
+      }
+    }
+
+    stderr:StdioCollector{
+      onStreamFinished:{
+        if(this.text)console.log("Error en Cava: "+this.text);
+      }
+    }
+  }
+
+  Process{
+    id:colorExtractor
     command:["bash","-c",
-      "magick '" + mediaModule.savedArtUrl.replace('file://', '') + "' -resize 1x1 txt:- | grep -o '#[0-9A-Fa-f]\\{6\\}' | head -n 1"
+      "magick -quiet '" + mediaModule.savedArtUrl.replace('file://', '') + "' -resize 1x1 txt:- | grep -o '#[0-9A-Fa-f]\\{6\\}' | head -n 1"
     ]
 
     stdout:StdioCollector{onStreamFinished:{
       let hexColor=this.text.trim();
       if(hexColor.startsWith("#")){
         mediaModule.dominantColor=hexColor;
+      }else{
+        mediaModule.dominantColor="#181825";
       }
     }}
 
     stderr:StdioCollector{onStreamFinished:{
-      console.log("Error extrayendo color: "+error)
-      mediaModule.dominantColor = "#181825"
+      let err=this.text.trim();
+      if(err)console.log("Advertencia en colorExtractor: "+err);
     }}
   }
 
@@ -150,6 +192,38 @@ ExpandableModule{
             color:hNext.hovered?"#89b4fa":"#cdd6f4"
             HoverHandler{id:hNext}
             MouseArea{anchors.fill:parent;onClicked:(mouse)=>{if(mediaModule.player)mediaModule.player.next();mouse.accepted=true}}
+          }
+        }
+      }
+    }
+  }
+
+  expandedContent:Component{
+    Item{
+      anchors.fill:parent
+
+      Row{
+        id:visualizer
+        anchors.top:parent.top
+        anchors.horizontalCenter:parent.horizontalCenter
+        width:parent.width
+        height:parent.height
+        property int minBarHeight:3
+        property int barCount:Math.max(1,mediaModule.audioLevels.length)
+        property real barGap:Math.min(4,Math.max(1,width/(barCount*6)))
+        property real barWidth:Math.max(1,(width-(barGap*(barCount-1)))/barCount)
+        spacing:barGap
+
+        Repeater{
+          model:mediaModule.audioLevels
+
+          Rectangle{
+            required property real modelData
+            width:visualizer.barWidth
+            height:Math.max(visualizer.minBarHeight,Math.min(visualizer.height,modelData*visualizer.height))
+            y:0
+            color:"#cdd6f4"
+            radius:Math.min(2,width/2)
           }
         }
       }
