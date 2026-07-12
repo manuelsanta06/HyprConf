@@ -17,7 +17,15 @@ hl.monitor({
     scale    = 1
 })
 
--- Any other
+-- Samsung TV
+hl.monitor({
+    output   = "desc:Samsung Electric Company SAMSUNG 0x01000E00",
+    mode     = "2560x1440@59",
+    position = "auto-up",
+    scale    = 1
+})
+
+-- Fallback
 hl.monitor({
     output   = "",
     mode     = "preferred",
