@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Window
 import Quickshell
 import Quickshell.Services.Pipewire
+import "../components"
 
 PanelWindow {
   id: volumeOsdWindow

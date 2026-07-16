@@ -89,7 +89,7 @@ PanelWindow {
       // BOTTOM
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
       NetworkWidget{}
-      Baterry{}
+      Battery{}
       Clock{textBottom:true}
     }
   }

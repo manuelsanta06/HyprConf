@@ -6,6 +6,7 @@ import Quickshell.Io
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
+import "../components"
 
 
 ShellRoot{

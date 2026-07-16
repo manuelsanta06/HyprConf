@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.UPower
 import Quickshell.Io
+import "../components"
 
 ExpandableModule{
   property bool textBottom:true

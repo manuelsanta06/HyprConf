@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import "../components"
 
 ExpandableModule {
   id: netWidget

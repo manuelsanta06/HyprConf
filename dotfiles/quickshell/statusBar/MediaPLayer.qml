@@ -2,8 +2,8 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import QtQuick
 import Quickshell.Io
-import QtQuick.Layouts
 import Quickshell.Services.Mpris
+import "../components"
 
 ExpandableModule{
   id:mediaModule
