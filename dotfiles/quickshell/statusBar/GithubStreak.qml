@@ -27,20 +27,20 @@ ExpandableModule{
   }
   function getStreakColor(streak){
     if(streak===0)return "#757575"
-    if(streak< 10)return "#FFCA28"
-    if(streak< 25)return "#FF9800"
-    if(streak< 50)return "#F44336"
-    if(streak< 75)return "#E91E63"
-    if(streak<100)return "#9C27B0"
+    if(streak< 50)return "#FFCA28"
+    if(streak<100)return "#FF9800"
+    if(streak<150)return "#F44336"
+    if(streak<200)return "#E91E63"
+    if(streak<365)return "#9C27B0"
     return "#FFD700"
   }
   function getStreakIcon(streak){
     if(streak===0)return '󰒲'
-    if(streak< 10)return ''
-    if(streak< 25)return "󰈸"
-    if(streak< 50)return ""
-    if(streak< 75)return "󰖨"
-    if(streak<100)return "" //TODO: get a better galaxy icon
+    if(streak< 50)return ''
+    if(streak<100)return "󰈸"
+    if(streak<150)return ""
+    if(streak<200)return "󰖨"
+    if(streak<365)return "" //TODO: get a better galaxy icon
     return ""
   }
 
