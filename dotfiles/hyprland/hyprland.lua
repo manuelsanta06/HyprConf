@@ -182,3 +182,9 @@ hl.window_rule({
     match        = {class="(pinentry-)(.*)"},
     stay_focused = true,
 })
+
+hl.layer_rule({
+  name="statusbar-blur",
+  match={namespace="^statusbar$"},
+  blur=true,
+})

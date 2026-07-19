@@ -5,6 +5,10 @@ import Quickshell.Io
 import "../components"
 
 ExpandableModule{
+  id:batteryWidget
+
+  property color pillColor:"#66181825"
+
   property bool textBottom:true
   textOnBottom:textBottom
   clickeable:true
@@ -41,7 +45,7 @@ ExpandableModule{
           Layout.fillWidth:true
           height:42
           radius:height/2
-          color:"#181825"
+          color:batteryWidget.pillColor
           border.color:"#313244"
           border.width:2
 

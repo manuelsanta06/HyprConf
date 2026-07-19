@@ -68,42 +68,45 @@ ExpandableModule{
         width:Math.min(parent.width,parent.height)
         height:width
 
-        //circle
-        Rectangle{
+        //Aro con apertura real para el icono, sin falsear el color del fondo.
+        Canvas{
+          id:streakRing
           anchors.fill:parent
-          radius:width/2
-          color:"transparent"
-          border.color:root.getStreakColor(root.currentStreak)
-          border.width:6
+          property color ringColor:root.getStreakColor(root.currentStreak)
 
-          ColumnLayout{
-            anchors.centerIn:parent
-            spacing:-2
+          onRingColorChanged:requestPaint()
+          onPaint:{
+            let ctx=getContext("2d");
+            let center=width/2;
+            let radius=(width-6)/2;
+            let gap=Math.PI*0.19;
 
-            Text{
-              text:root.currentStreak
-              color:"#cdd6f4"
-              font.pixelSize:circleBox.width*0.35
-              font.bold:true
-              Layout.alignment:Qt.AlignHCenter
-            }
-            Text{
-              text:"Streak"
-              color:"#a6adc8"
-              font.pixelSize:circleBox.width*0.12
-              Layout.alignment:Qt.AlignHCenter
-            }
+            ctx.reset();
+            ctx.beginPath();
+            ctx.arc(center,center,radius,-Math.PI/2+gap/2,Math.PI*1.5-gap/2,false);
+            ctx.strokeStyle=ringColor;
+            ctx.lineWidth=6;
+            ctx.stroke();
           }
         }
 
-        //mask
-        Rectangle{
-          width:circleBox.width*0.28
-          height:width*1
-          color:"#27272c"
-          radius:height/2
-          anchors.horizontalCenter:parent.horizontalCenter
-          anchors.verticalCenter:parent.top
+        ColumnLayout{
+          anchors.centerIn:parent
+          spacing:-2
+
+          Text{
+            text:root.currentStreak
+            color:"#cdd6f4"
+            font.pixelSize:circleBox.width*0.35
+            font.bold:true
+            Layout.alignment:Qt.AlignHCenter
+          }
+          Text{
+            text:"Streak"
+            color:"#a6adc8"
+            font.pixelSize:circleBox.width*0.12
+            Layout.alignment:Qt.AlignHCenter
+          }
         }
 
         //fire
@@ -205,5 +208,3 @@ ExpandableModule{
     }
   }
 }
-
-

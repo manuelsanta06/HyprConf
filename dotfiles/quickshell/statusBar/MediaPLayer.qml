@@ -26,7 +26,7 @@ ExpandableModule{
   collapsedHeight:75
   expandedHeight:75
   property string savedArtUrl:""
-  property string dominantColor:"#181825"
+  property string dominantColor:"#82181825"
   backgroundColor:mediaModule.dominantColor
 
   property int cavaBars:30
@@ -76,9 +76,9 @@ ExpandableModule{
     stdout:StdioCollector{onStreamFinished:{
       let hexColor=this.text.trim();
       if(hexColor.startsWith("#")){
-        mediaModule.dominantColor=hexColor;
+        mediaModule.dominantColor=Qt.alpha(hexColor,0.5);
       }else{
-        mediaModule.dominantColor="#181825";
+        mediaModule.dominantColor="#7F181825";
       }
     }}
 

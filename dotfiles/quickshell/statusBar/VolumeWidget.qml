@@ -7,7 +7,6 @@ Item {
   Layout.fillWidth: true
   implicitHeight: 40
 
-  // --- LÓGICA DE VOLUMEN (WPCTL) ---
   property real vol: 0
   property bool isMuted: false
 
@@ -20,7 +19,6 @@ Item {
     command: ["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@"]
     stdout: StdioCollector {
       onStreamFinished: {
-        // Formato esperado: "Volume: 0.50" o "Volume: 0.50 [MUTED]"
         let output = this.text.trim();
         let parts = output.split(" ");
         if (parts.length >= 2) {
@@ -33,24 +31,23 @@ Item {
 
   Process { id: volSetter }
 
-  // Refrescar al cargar y periódicamente
   Component.onCompleted: updateInfo()
   
-  // Timer para detectar cambios externos (teclas multimedia)
+  
   Timer {
     interval: 2000
     running: true; repeat: true
     onTriggered: updateInfo()
   }
 
-  // --- DISEÑO ---
+  
   Rectangle {
     anchors.fill: parent
     radius: 8
     color: "#1affffff"
     clip: true
 
-    // Barra de Progreso
+    
     Rectangle {
       id: progress
       width: parent.width * Math.min(root.vol, 1.0)
@@ -96,11 +93,11 @@ Item {
       }
       
       function update(mouse) {
-        let pct = Math.max(0, Math.min(1.5, mouse.x / width)); // Permite hasta 150% si el sistema lo soporta
+        let pct = Math.max(0, Math.min(1.5, mouse.x / width)); 
         root.vol = pct;
         volSetter.exec(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.min(pct, 1.0).toFixed(2)]);
         
-        // Si estaba muteado, desmutear al mover
+        
         if (root.isMuted) {
           volSetter.exec(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "0"]);
           root.isMuted = false;

@@ -134,7 +134,7 @@ ExpandableModule{
             Layout.fillWidth:true
             Layout.preferredHeight:28
             radius:6
-            color:active?"#1793d1":(occupied?"#313244":"#181825")
+            color:active?"#1793d1":(occupied?"#7F111224":"#50181825")
             border.width:workspace&&workspace.urgent?1:0
             border.color:"#f38ba8"
 

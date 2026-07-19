@@ -25,6 +25,7 @@ PanelWindow {
   // width:barWidth
   implicitWidth:(root.revealed||xAnim.running)?root.barWidth:root.triggerPx
   color:"transparent"
+  WlrLayershell.namespace:"statusbar"
 
 
   property bool revealed:false
@@ -48,7 +49,7 @@ PanelWindow {
   //Bar panel
   Rectangle{
     id:barBody
-    color:"#0f0f14"
+    color:"#c20f0f14"
 
     x:root.revealed?0:-root.barWidth
     y:0
