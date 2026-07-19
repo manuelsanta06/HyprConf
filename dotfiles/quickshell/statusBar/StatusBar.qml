@@ -79,6 +79,7 @@ PanelWindow {
       Options{}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
+      WorkspaceWidget{}
       GithubStreak{textBottom:false}
       MediaPLayer{}
 
