@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
@@ -19,13 +20,14 @@ PanelWindow {
   // Layer-shell config
   aboveWindows:true
   exclusionMode:ExclusionMode.Ignore
+  WlrLayershell.namespace:"statusbar"
+  HyprlandWindow.visibleMask:Region{item:barBody}
 
   anchors{left:true;top:true;bottom:true;}
 
   // width:barWidth
   implicitWidth:(root.revealed||xAnim.running)?root.barWidth:root.triggerPx
   color:"transparent"
-  WlrLayershell.namespace:"statusbar"
 
 
   property bool revealed:false
