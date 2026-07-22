@@ -26,7 +26,7 @@ ExpandableModule{
     return "#39d353"
   }
   function getStreakColor(streak){
-    if(streak===0)return "#757575"
+    if(streak<3)return "#757575"
     if(streak< 50)return "#FFCA28"
     if(streak<100)return "#FF9800"
     if(streak<150)return "#F44336"
@@ -35,7 +35,7 @@ ExpandableModule{
     return "#FFD700"
   }
   function getStreakIcon(streak){
-    if(streak===0)return '󰒲'
+    if(streak<3)return '󰒲'
     if(streak< 50)return ''
     if(streak<100)return "󰈸"
     if(streak<150)return ""
