@@ -3,13 +3,16 @@ import QtQuick.Layouts
 import Quickshell.Services.UPower
 import Quickshell.Io
 import "../components"
+pragma ComponentBehavior:Bound
 
 ExpandableModule{
   id:batteryWidget
 
   property color pillColor:"#66181825"
 
+  property bool effectsEnabled:true
   property bool textBottom:true
+  property string activeProfile:"balanced"
   textOnBottom:textBottom
   clickeable:true
   hideColapsed:false
@@ -21,29 +24,46 @@ ExpandableModule{
       anchors.fill:parent
       anchors.margins:2
 
-      property string activeProfile:"balanced"
-
       Process {
-        id:profileFetcher
-        command:["powerprofilesctl","get"]
-        running:true 
+        id:initFetcher
+        command:["sh","-c","powerprofilesctl get;hyprctl getoption decoration:blur:enabled -j | jq '.bool'"]
+        running:true
 
-        stdout:StdioCollector{onStreamFinished:{
-            if(this.text){activeProfile=this.text.trim()}
-        }}
+        stdout:StdioCollector{
+          onStreamFinished:{
+            if(!this.text)return
+            let outputLines=this.text.trim().split('\n')
+            
+            if(outputLines.length<2)return
+            batteryWidget.activeProfile=outputLines[0].trim()
+            batteryWidget.effectsEnabled=(outputLines[1].trim()==="true")
+            if(batteryWidget.activeProfile=="power-saver")batteryWidget.expandedHeight=90
+          }
+        }
+      }
+
+      Process{
+        id:effectRunner
+        command:["toggleDetails.sh"]
+        running:false
+        stdout:StdioCollector{
+          onStreamFinished:{
+            if(this.text)batteryWidget.effectsEnabled=(this.text.trim()==="true")
+          }
+        }
       }
 
       Process{id:cmdRunner}
 
       ColumnLayout{
         anchors.fill:parent
-        spacing:10
+        Layout.alignment:Qt.AlignVCenter
+        spacing:0
 
         //big pill
         Rectangle{
-          anchors.centerIn: parent
           Layout.fillWidth:true
-          height:42
+          implicitHeight:42
           radius:height/2
           color:batteryWidget.pillColor
           border.color:"#313244"
@@ -55,13 +75,13 @@ ExpandableModule{
             height:parent.height
             radius:parent.radius
             
-            x:activeProfile==="power-saver"?0:
-              activeProfile==="balanced"?parent.width/3:
-              activeProfile==="performance"?(parent.width/3)*2:
+            x:batteryWidget.activeProfile==="power-saver"?0:
+              batteryWidget.activeProfile==="balanced"?parent.width/3:
+              batteryWidget.activeProfile==="performance"?(parent.width/3)*2:
               (parent.width/3)*2
-            color:activeProfile==="power-saver"?"#a6e3a1":
-              activeProfile==="balanced"?"#89b4fa":
-              activeProfile==="performance"?"#8806ce":
+            color:batteryWidget.activeProfile==="power-saver"?"#a6e3a1":
+              batteryWidget.activeProfile==="balanced"?"#89b4fa":
+              batteryWidget.activeProfile==="performance"?"#8806ce":
               "#8806ce"
             opacity:0.2 
 
@@ -86,15 +106,15 @@ ExpandableModule{
                 anchors.centerIn:parent
                 text:""
                 font.pixelSize:16
-                color:activeProfile==="power-saver"?"#a6e3a1":"#6c7086"
+                color:batteryWidget.activeProfile==="power-saver"?"#a6e3a1":"#6c7086"
                 Behavior on color{ColorAnimation{duration:200}}
               }
               TapHandler{onTapped:{
-                activeProfile="power-saver"
+                batteryWidget.activeProfile="power-saver"
+                batteryWidget.expandedHeight=90
                 cmdRunner.exec(["powerprofilesctl","set","power-saver"])
               }}
             }
-            
             //balanced
             Item{
               width:parent.width/3
@@ -103,39 +123,85 @@ ExpandableModule{
                 anchors.centerIn:parent
                 text:""
                 font.pixelSize:18
-                color:activeProfile==="balanced"?"#89b4fa":"#6c7086"
+                color:batteryWidget.activeProfile==="balanced"?"#89b4fa":"#6c7086"
                 Behavior on color{ColorAnimation{duration:200}}
               }
               TapHandler{onTapped:{
-                activeProfile="balanced"
+                batteryWidget.activeProfile="balanced"
+                batteryWidget.expandedHeight=55
+                if(!batteryWidget.effectsEnabled)
+                  effectRunner.running=true
                 cmdRunner.exec(["powerprofilesctl","set","balanced"])
               }}
             }
-
             //performance
             Item{
-              width:parent.width / 3
+              width:parent.width/3
               height:parent.height
               Text{
                 anchors.centerIn:parent
                 text:""
                 font.pixelSize:16
-                color:activeProfile==="performance"?"#8806ce":"#6c7086"
+                color:batteryWidget.activeProfile==="performance"?"#8806ce":"#6c7086"
                 Behavior on color{ColorAnimation{duration:200 }}
               }
               TapHandler{onTapped:{
-                activeProfile="performance"
+                batteryWidget.activeProfile="performance"
+                batteryWidget.expandedHeight=55
+                if(!batteryWidget.effectsEnabled)
+                  effectRunner.running=true
                 cmdRunner.exec(["powerprofilesctl","set","performance"])
               }}
             }
           }
         }
-        
-        Row{
-           Layout.fillWidth:true
-           Item{width:parent.width/3;Text{anchors.centerIn:parent;text:"Ahorro";color:"#a6adc8";font.pixelSize:11;font.weight:Font.Medium}}
-           Item{width:parent.width/3;Text{anchors.centerIn:parent;text:"Normal";color:"#a6adc8";font.pixelSize:11;font.weight:Font.Medium}}
-           Item{width:parent.width/3;Text{anchors.centerIn:parent;text:"Máximo";color:"#a6adc8";font.pixelSize:11;font.weight:Font.Medium}}
+        Rectangle{
+          visible:batteryWidget.activeProfile==="power-saver"
+          Layout.fillWidth:true
+          implicitHeight:42
+          radius:height/2
+          color:batteryWidget.pillColor
+          border.color:"#313244"
+          border.width:2
+
+          RowLayout{
+            anchors.fill:parent
+            anchors.margins:12
+            spacing:10
+
+            Text{
+              Layout.fillWidth:true
+              text:"Prettiness"
+              color:"#cdd6f4"
+              font.pixelSize:13
+              font.weight:Font.Medium
+            }
+
+            Rectangle{
+              id:toggleSwitch
+              implicitWidth:36
+              implicitHeight:20
+              radius:10
+              color:batteryWidget.effectsEnabled?"#a6e3a1":"#45475a"
+              Behavior on color{ColorAnimation{duration:200}}
+
+              Rectangle{
+                width:16
+                height:16
+                radius:8
+                color:"#1e1e2e"
+                y:2
+                x:batteryWidget.effectsEnabled?18:2
+                Behavior on x{NumberAnimation{duration:200;easing.type:Easing.OutCubic}}
+              }
+
+              TapHandler{
+                onTapped:{
+                  effectRunner.running=true
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -200,7 +266,7 @@ ExpandableModule{
 
         // Texto del porcentaje
         Text{
-          text:Math.round(UPower.displayDevice.percentage * 100) + "%"
+          text:Math.round(UPower.displayDevice.percentage*100)+"%"
           color:"#cdd6f4"
           font.pixelSize:13
           font.bold:true
@@ -224,11 +290,17 @@ ExpandableModule{
 
           Rectangle{
             id:powerBtn
+
+            required property string name
+            required property string icon
+            required property string accent
+            required property string command
+
             width:30
             height:30
             radius:4
             color:"transparent"
-            border.color:hover.hovered?model.accent:"transparent"
+            border.color:hover.hovered?accent:"transparent"
             border.width:1
 
             property bool actionTriggered:false
@@ -247,7 +319,7 @@ ExpandableModule{
               anchors.top:parent.top
               anchors.bottom:parent.bottom
               radius:3
-              color:model.accent
+              color:powerBtn.accent
               opacity:0.3
 
               width:tap.pressed?parent.width:0
@@ -261,9 +333,9 @@ ExpandableModule{
               onWidthChanged:{
                 if(width>=parent.width-0.5&&tap.pressed&&!powerBtn.actionTriggered){
                   powerBtn.actionTriggered=true;
-                  console.log("Ejecutando acción:"+model.name)
+                  console.log("Ejecutando acción:"+powerBtn.name)
                   
-                  cmdRunner.exec(["sh", "-c", model.command])
+                  cmdRunner.exec(["sh","-c",powerBtn.command])
                 }
               }
             }
@@ -271,8 +343,8 @@ ExpandableModule{
             // Ícono
             Text{
               anchors.centerIn:parent
-              text:model.icon
-              color:hover.hovered||tap.pressed?model.accent:"#cdd6f4"
+              text:powerBtn.icon
+              color:hover.hovered||tap.pressed?powerBtn.accent:"#cdd6f4"
               font.pixelSize:16
             }
           }

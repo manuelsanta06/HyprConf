@@ -26,8 +26,8 @@ ExpandableModule{
     return "#39d353"
   }
   function getStreakColor(streak){
-    if(streak<3)return "#757575"
-    if(streak< 50)return "#FFCA28"
+    if(streak<3  )return "#757575"
+    if(streak<50 )return "#FFCA28"
     if(streak<100)return "#FF9800"
     if(streak<150)return "#F44336"
     if(streak<200)return "#E91E63"
@@ -40,7 +40,7 @@ ExpandableModule{
     if(streak<100)return "󰈸"
     if(streak<150)return ""
     if(streak<200)return "󰖨"
-    if(streak<365)return "" //TODO: get a better galaxy icon
+    if(streak<365)return ""
     return ""
   }
 
