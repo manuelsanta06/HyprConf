@@ -24,7 +24,7 @@ ExpandableModule{
       anchors.fill:parent
       anchors.margins:2
 
-      Process {
+      Process{
         id:initFetcher
         command:["sh","-c","powerprofilesctl get;hyprctl getoption decoration:blur:enabled -j | jq '.bool'"]
         running:true
@@ -37,7 +37,7 @@ ExpandableModule{
             if(outputLines.length<2)return
             batteryWidget.activeProfile=outputLines[0].trim()
             batteryWidget.effectsEnabled=(outputLines[1].trim()==="true")
-            if(batteryWidget.activeProfile=="power-saver")batteryWidget.expandedHeight=90
+            if(batteryWidget.activeProfile!="performance")batteryWidget.expandedHeight=90
           }
         }
       }
@@ -128,9 +128,9 @@ ExpandableModule{
               }
               TapHandler{onTapped:{
                 batteryWidget.activeProfile="balanced"
-                batteryWidget.expandedHeight=55
-                if(!batteryWidget.effectsEnabled)
-                  effectRunner.running=true
+                batteryWidget.expandedHeight=90
+                // if(!batteryWidget.effectsEnabled)
+                //   effectRunner.running=true
                 cmdRunner.exec(["powerprofilesctl","set","balanced"])
               }}
             }
@@ -155,8 +155,9 @@ ExpandableModule{
             }
           }
         }
+        // Prettiness swotch
         Rectangle{
-          visible:batteryWidget.activeProfile==="power-saver"
+          visible:batteryWidget.activeProfile!="performance"
           Layout.fillWidth:true
           implicitHeight:42
           radius:height/2
