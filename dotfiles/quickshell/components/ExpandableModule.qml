@@ -27,7 +27,7 @@ Item {
   property color accentColor:     "#4fffffff"
   property color backgroundColor: "#1affffff"
 
-  property bool clickeable:   false
+  property bool clickeable:   true
   property bool textOnBottom: false
   property bool hideColapsed: false
   

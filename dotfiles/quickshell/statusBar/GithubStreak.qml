@@ -134,7 +134,7 @@ ExpandableModule{
         Text{
           id:ghIcon
           text:""
-          color:tapHandler.pressed ? "#39d353":"#cdd6f4"
+          color:tapHandler.pressed?"#39d353":"#cdd6f4"
           font.pixelSize:parent.height*0.8
           anchors.verticalCenter:parent.verticalCenter
           TapHandler{
