@@ -7,18 +7,18 @@ import "../components"
 ExpandableModule{
   id:netWidget
   
-  collapsedHeight: 45
-  expandedHeight: 0 
+  collapsedHeight:45
+  expandedHeight:0 
   clickeable:true
-  implicitHeight: collapsedHeight
+  implicitHeight:collapsedHeight
 
-  property string ssid: "Buscando..."
-  property string type: "wifi"
-  property int strength: 0
-  property string accent: "#1793d1"
+  property string ssid:"Searching..."
+  property string type:"wifi"
+  property int strength:0
+  property string accent:"#1793d1"
 
   function getIcon() {
-    if(ssid==="Desconectado")return "󰖪";
+    if(ssid==="Disconected")return "󰖪";
     if(type==="ethernet")return "󰈀";
     
     if(strength<25)return "󰤟";
@@ -48,7 +48,7 @@ ExpandableModule{
         let parts=output.split(":");
         // parts[0] = TYPE, parts[1] = STATE, parts[2] = CONNECTION (SSID)
         netWidget.type=parts[0].toLowerCase();
-        netWidget.ssid=parts[2]||"Conectado";
+        netWidget.ssid=parts[2]||"connected";
         
         if(netWidget.type==="wifi"){
           strengthFetcher.running=true;
@@ -73,20 +73,20 @@ ExpandableModule{
 
   Process{id:cmdRunner}
 
-  Component.onCompleted: refresh()
-  Timer { interval: 10000; running: true; repeat: true; onTriggered: refresh() }
+  Component.onCompleted:refresh()
+  Timer{interval:10000;running:true;repeat:true;onTriggered:refresh()}
 
-  collapsedContent: Component {
-    RowLayout {
+  collapsedContent:Component{
+    RowLayout{
       anchors.fill: parent
-      anchors.leftMargin: 16
-      anchors.rightMargin: 16
-      spacing: 12
+      anchors.leftMargin:16
+      anchors.rightMargin:16
+      spacing:12
 
-      Text {
-        text: netWidget.getIcon()
-        font.pixelSize: 18
-        color: netWidget.ssid!=="Desconectado"?netWidget.accent:"#f38ba8"
+      Text{
+        text:netWidget.getIcon()
+        font.pixelSize:18
+        color:netWidget.ssid!=="Disconected"?netWidget.accent:"#f38ba8"
         //TODO: better network config
         TapHandler{
           id:tapHandler
@@ -97,16 +97,16 @@ ExpandableModule{
         }
       }
 
-      Text {
-        Layout.fillWidth: true
-        text: netWidget.ssid
-        color: "#cdd6f4"
-        font.pixelSize: 13
-        font.bold: true
-        elide: Text.ElideRight
+      Text{
+        Layout.fillWidth:true
+        text:netWidget.ssid
+        color:"#cdd6f4"
+        font.pixelSize:13
+        font.bold:true
+        elide:Text.ElideRight
       }
     }
   }
 
-  expandedContent: Component { Item {} }
+  expandedContent:Component{Item{}}
 }

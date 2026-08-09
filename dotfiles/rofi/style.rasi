@@ -9,7 +9,7 @@
 
 /*****----- Configuration -----*****/
 configuration {
-	modi:                       "drun,calc,filebrowser,run";
+	modi:                       "drun,filebrowser,run";
     show-icons:                 true;
     display-drun:               "  Apps";
     display-run:                "  Run";
