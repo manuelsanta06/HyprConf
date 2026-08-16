@@ -17,8 +17,8 @@ ExpandableModule{
   property int strength:0
   property string accent:"#1793d1"
 
-  function getIcon() {
-    if(ssid==="Disconected")return "󰖪";
+  function getIcon(){
+    if(ssid==="Disconnected")return "󱍢";
     if(type==="ethernet")return "󰈀";
     
     if(strength<25)return "󰤟";
@@ -39,11 +39,13 @@ ExpandableModule{
       onStreamFinished:{
         let output=this.text.trim();
         if(output===""){
-          netWidget.ssid="Desconectado";
+          netWidget.ssid="Disconnected";
           netWidget.type="wifi";
           netWidget.strength=0;
+          netWidget.accent="#ff0000";
           return;
         }
+        netWidget.accent="#1793d1";
         
         let parts=output.split(":");
         // parts[0] = TYPE, parts[1] = STATE, parts[2] = CONNECTION (SSID)
@@ -86,7 +88,7 @@ ExpandableModule{
       Text{
         text:netWidget.getIcon()
         font.pixelSize:18
-        color:netWidget.ssid!=="Disconected"?netWidget.accent:"#f38ba8"
+        color:netWidget.ssid!=="Disconnected"?netWidget.accent:"#f38ba8"
         //TODO: better network config
         TapHandler{
           id:tapHandler
