@@ -79,12 +79,6 @@ ExpandableModule{
           elide:Text.ElideRight
         }
       }
-
-      Text{
-        text:root.expanded?"󰅀":"󰅂"
-        color:"#6c7086"
-        font.pixelSize:14
-      }
     }
   }
 

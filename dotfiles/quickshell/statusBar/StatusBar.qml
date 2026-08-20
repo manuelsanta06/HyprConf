@@ -4,7 +4,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
-PanelWindow {
+PanelWindow{
   id: root
   //Tunables
   readonly property int hideDelayMs:500
@@ -21,7 +21,10 @@ PanelWindow {
   aboveWindows:true
   exclusionMode:ExclusionMode.Ignore
   WlrLayershell.namespace:"statusbar"
-  HyprlandWindow.visibleMask:Region{item:barBody}
+  HyprlandWindow.visibleMask:Region{
+    Region{item:barBody}
+    Region{item:triggerZone}
+  }
 
   anchors{left:true;top:true;bottom:true;}
 
@@ -31,6 +34,13 @@ PanelWindow {
 
 
   property bool revealed:false
+
+  // Keep a small input strip alive while the bar is hidden.
+  Item{
+    id:triggerZone
+    width:root.triggerPx
+    height:root.height
+  }
 
   //Auto-hide timer
   Timer{
@@ -80,6 +90,7 @@ PanelWindow {
 
       // TOP
       Options{}
+      FileDrawer{id:fileDrawer}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
       WorkspaceWidget{}
@@ -95,6 +106,31 @@ PanelWindow {
       NetworkWidget{}
       Battery{}
       Clock{textBottom:true}
+    }
+  }
+
+  //File drop target
+  DropArea{
+    id:barDropArea
+    anchors{left:parent.left;top:parent.top;bottom:parent.bottom}
+    width:root.triggerPx
+    enabled:!fileDrawer.printing
+
+    onEntered:root.revealed=true
+    onDropped:function(drop){
+      if(!fileDrawer.printing&&drop.urls&&drop.urls.length>0){
+        drop.accept(Qt.CopyAction);
+        fileDrawer.expanded=true;
+        fileDrawer.enqueueDroppedUrls(drop.urls);
+      }
+    }
+
+    Rectangle{
+      anchors.fill:parent
+      visible:barDropArea.containsDrag&&!fileDrawer.printing
+      color:"#401793d1"
+      border.width:1
+      border.color:"#1793d1"
     }
   }
 }
