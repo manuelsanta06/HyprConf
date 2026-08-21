@@ -71,6 +71,16 @@ ExpandableModule{
     return path.substring(path.lastIndexOf("/")+1);
   }
 
+  function fileNameFromWebUrl(url) {
+    try{
+      let parts=url.split('?')[0].split('/');
+      let name=parts[parts.length-1];
+      return name?decodeURIComponent(name):"downloaded_file";
+    }catch(e){
+      return "downloaded_file";
+    }
+  }
+
   function nameTaken(name,extraNames){
     for(let i=0;i<root.files.length;i++){
       if(root.files[i].name===name)return true;
@@ -113,7 +123,7 @@ ExpandableModule{
   }
 
   function enqueueDroppedUrls(urls){
-    if(root.printing||!urls||urls.length === 0)return;
+    if(root.printing||!urls||urls.length===0)return;
 
     if(!storageReady){
       root.pendingDropUrls=root.pendingDropUrls.concat(urls);
@@ -125,27 +135,34 @@ ExpandableModule{
     let names=[];
 
     for(let i=0;i<urls.length;i++){
-      let sourcePath=root.pathFromUrl(urls[i]);
-      if(sourcePath===""){
-        root.lastMessage="Only local files can be copied";
-        continue;
+      let rawUrl=typeof urls[i].toString==="function"?urls[i].toString():String(urls[i]);
+      let isWeb=rawUrl.startsWith("http://")||rawUrl.startsWith("https://");
+      
+      let sourcePath="";
+      if(!isWeb){
+        sourcePath=root.pathFromUrl(urls[i]);
+        if(sourcePath===""){
+          root.lastMessage="Only local or web files can be copied";
+          continue;
+        }
+
+        //prevent duplicating files
+        if(sourcePath===root.drawerDirectory||sourcePath.indexOf(root.drawerDirectory+"/")===0){
+          continue;
+        }
       }
 
-      // Do not duplicate files by dropping one of the drawer's own copies
-      // back onto the drawer.
-      if(sourcePath === root.drawerDirectory||sourcePath.indexOf(root.drawerDirectory+"/")===0){
-        continue;
-      }
-
-      let originalName=root.fileNameFromPath(sourcePath);
-      if(originalName==="")continue;
+      let originalName=isWeb?root.fileNameFromWebUrl(rawUrl):root.fileNameFromPath(sourcePath);
+      if(originalName==="")originalName="downloaded_file";
 
       let destinationName=root.uniqueName(originalName,names);
       names.push(destinationName);
+      
       queue.push({
-        source:sourcePath,
+        source:isWeb?rawUrl:sourcePath,
         name:destinationName,
-        destination:root.drawerDirectory+"/"+destinationName
+        destination:root.drawerDirectory+"/"+destinationName,
+        isWeb:isWeb
       });
     }
 
@@ -160,11 +177,21 @@ ExpandableModule{
     if(copyProcess.running||root.copyQueue.length===0)return;
 
     root.activeCopy=root.copyQueue[0];
-    copyProcess.exec([
-      "cp","--",
-      root.activeCopy.source,
-      root.activeCopy.destination
-    ]);
+    
+    if(root.activeCopy.isWeb){
+      root.lastMessage="Downloading file";
+      copyProcess.exec([
+        "curl","-sL",
+        "-o",root.activeCopy.destination,
+        root.activeCopy.source
+      ]);
+    }else{
+      copyProcess.exec([
+        "cp","--",
+        root.activeCopy.source,
+        root.activeCopy.destination
+      ]);
+    }
   }
 
   function deleteFile(file){
@@ -637,10 +664,7 @@ ExpandableModule{
           Layout.fillWidth:true
           text:root.printing
             ?root.lastMessage
-           :(root.lastMessage+
-             (root.queuedPrinterJobs>=0
-                ?" · Queue:"+root.queuedPrinterJobs
-               :""))
+           :(root.lastMessage+(root.queuedPrinterJobs>=0?" · Queue:"+root.queuedPrinterJobs:""))
           color:root.printing?"#f9e2af":"#6c7086"
           font.pixelSize:9
           elide:Text.ElideRight
