@@ -90,7 +90,6 @@ PanelWindow{
 
       // TOP
       Options{}
-      FileDrawer{id:fileDrawer}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
       WorkspaceWidget{}
@@ -102,6 +101,7 @@ PanelWindow{
       Item{Layout.fillHeight:true}
 
       // BOTTOM
+      FileDrawer{id:fileDrawer}
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
       NetworkWidget{}
       Battery{}

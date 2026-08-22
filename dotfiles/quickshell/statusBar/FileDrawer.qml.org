@@ -8,17 +8,16 @@ import "../components"
 
 ExpandableModule{
   id:root
-  textOnBottom:true
 
   // The directory is the source of truth.
   // If a copy disappears, it disappears from the drawer too.
   readonly property string drawerDirectory:
     Quickshell.env("HOME")+"/.cache/statusbar/fileDrawer"
 
-  property var    files:[]
-  property var    pendingDropUrls:[]
+  property var files:[]
+  property var pendingDropUrls:[]
   property string lastMessage:"Ready to use"
-  property int    queuedPrinterJobs:0
+  property int queuedPrinterJobs:0
 
   // Copy queue
   property var copyQueue:[]
@@ -27,48 +26,26 @@ ExpandableModule{
   readonly property bool copying:copyProcess.running||copyQueue.length>0
 
   // Print queue
-  property bool   printing:false
-  property bool   cancelRequested:false
-  property var    printQueue:[]
-  property var    activePrint:null
-  property var    submittedJobs:[]
-  property int    printIndex:0
-  property int    printTotal:0
-  property int    printFailureCount:0
+  property bool printing:false
+  property bool cancelRequested:false
+  property var printQueue:[]
+  property var activePrint:null
+  property var submittedJobs:[]
+  property int printIndex:0
+  property int printTotal:0
+  property int printFailureCount:0
   property string printOutput:""
   property string printError:""
-  property bool   submissionFinished:false
-  property bool   printTrackingAvailable:true
+  property bool submissionFinished:false
+  property bool printTrackingAvailable:true
   property string printerOutput:""
-  property bool   printerStatusAvailable:false
-  property bool   refreshAfterCurrentPrinterQuery:false
-
-  // Temporary LAN share (python http.server + qrencode)
-  property bool   sharing:false
-  property string shareToken:""
-  property string shareDir:""
-  property string shareIp:""
-  property int    sharePort:0
-  property string shareUrl:""
-  property string qrPath:""
-  property bool   qrReady:false
-  property string shareStatusMessage:"Preparing link..."
-  readonly property int shareTimeoutSeconds:600
-  property int    shareSecondsLeft:0
+  property bool printerStatusAvailable:false
+  property bool refreshAfterCurrentPrinterQuery:false
 
   collapsedHeight:46
-  expandedHeight:{
-    let base=Math.min(300,Math.max(150,92+Math.min(root.files.length,6)*30));
-    let shareSize=Math.min(260,Math.max(0,root.width-16));
-    return root.sharing?base+shareSize+12:base;
-  }
+  expandedHeight:Math.min(300,Math.max(150,92+Math.min(root.files.length,6)*30))
   clickeable:true
   backgroundColor:"#1affffff"
-
-  onExpandedChanged:if(root.expanded&&root.storageReady){
-    root.refreshFiles();
-    root.refreshPrinterStatus();
-  }
 
   function pathToUrl(path){
     let segments=path.split("/");
@@ -169,6 +146,7 @@ ExpandableModule{
           continue;
         }
 
+        //prevent duplicating files
         if(sourcePath===root.drawerDirectory||sourcePath.indexOf(root.drawerDirectory+"/")===0){
           continue;
         }
@@ -282,7 +260,7 @@ ExpandableModule{
       root.lastMessage="Print stopped";
     }else if(root.printFailureCount>0){
       root.lastMessage=root.printFailureCount+
-        " file"+(root.printFailureCount===1?"":"s")+" couldn't be printed";
+        " file"+(root.printFailureCount===1?"":"s")+" couldnt be printed";
     } else{
       root.lastMessage=root.printTotal+" file"+
        (root.printTotal===1?"":"s")+" sent to printer";
@@ -297,7 +275,7 @@ ExpandableModule{
     if(!root.printing||root.cancelRequested)return;
 
     root.cancelRequested=true;
-    root.lastMessage="Stopping print...";
+    root.lastMessage="Stopping impresion...";
 
     if(root.submittedJobs.length>0 && !cancelProcess.running)
       cancelProcess.exec(["cancel"].concat(root.submittedJobs));
@@ -338,92 +316,6 @@ ExpandableModule{
     }
 
     if(activeJobs===0)root.finishPrinting(false);
-  }
-
-  function randomToken(length){
-    let chars="abcdefghijklmnopqrstuvwxyz0123456789";
-    let token="";
-    for(let i=0;i<length;i++)
-      token+=chars.charAt(Math.floor(Math.random()*chars.length));
-    return token;
-  }
-
-  function formatCountdown(totalSeconds){
-    let seconds=totalSeconds<0?0:totalSeconds;
-    let minutes=Math.floor(seconds/60);
-    let remainder=seconds%60;
-    return minutes+":"+(remainder<10?"0":"")+remainder;
-  }
-
-  // Serve drawerDirectory over the LAN through a random, unguessable path.
-  // The token is a symlink inside a temporary directory, so file changes
-  // made while sharing are visible without restarting the server.
-  function startSharing(){
-    if(root.sharing||root.printing||root.files.length===0)return;
-
-    root.shareToken=root.randomToken(10);
-    root.shareDir="/tmp/statusbar-share-"+root.shareToken;
-    root.qrPath=root.shareDir+"/.share-qr.svg";
-    root.shareIp="";
-    root.sharePort=0;
-    root.shareUrl="";
-    root.qrReady=false;
-    root.shareStatusMessage="Preparing link...";
-    root.sharing=true;
-
-    shareSetupProcess.exec(["sh","-c",
-      "mkdir -p '"+root.shareDir+"' && ln -sfn '"+root.drawerDirectory+"' '"+root.shareDir+"/"+root.shareToken+"'"
-    ]);
-
-    ipProcess.exec(["sh","-c","ip route get 1.1.1.1 | awk '{print $7; exit}'"]);
-  }
-
-  function stopSharing(){
-    if(!root.sharing&&!shareServerProcess.running)return;
-
-    let dirToClean=root.shareDir;
-    root.resetShareState("Share stopped");
-
-    if(ipProcess.running)ipProcess.signal(15);
-    if(shareSetupProcess.running)shareSetupProcess.signal(15);
-    if(shareServerProcess.running)shareServerProcess.signal(15);
-    if(qrProcess.running)qrProcess.signal(15);
-    if(qrFileCheckProcess.running)qrFileCheckProcess.signal(15);
-    if(dirToClean!=="")shareCleanupProcess.exec(["rm","-rf",dirToClean]);
-  }
-
-  function resetShareState(message){
-    root.sharing=false;
-    root.shareUrl="";
-    root.qrReady=false;
-    root.sharePort=0;
-    root.shareIp="";
-    shareTimeoutTimer.stop();
-    if(message!==undefined)root.shareStatusMessage=message;
-  }
-
-  function tryFinalizeShareUrl(){
-    if(!root.sharing||root.sharePort===0||root.shareIp==="")return;
-
-    root.shareUrl="http://"+root.shareIp+":"+root.sharePort+"/"+root.shareToken+"/";
-    root.shareStatusMessage="Link ready";
-    root.shareSecondsLeft=root.shareTimeoutSeconds;
-    shareTimeoutTimer.restart();
-    root.qrReady=false;
-    qrProcess.exec([
-      "qrencode","--type=SVG","--output",root.qrPath,root.shareUrl
-    ]);
-  }
-
-  function handleShareServerLine(line){
-    if(!root.sharing||root.sharePort!==0)return;
-
-    let serverLine=String(line).trim();
-    let match=serverLine.match(/\bport\s+(\d+)\b/i);
-    if(match){
-      root.sharePort=parseInt(match[1]);
-      root.tryFinalizeShareUrl();
-    }
   }
 
   Component.onCompleted:storageProcess.exec(["mkdir","-p",root.drawerDirectory])
@@ -497,7 +389,7 @@ ExpandableModule{
       }
 
       if(root.copyFailureCount>0){
-        root.lastMessage=root.copyFailureCount+" file" +(root.copyFailureCount===1?"":"s")+" couldn't be copied";
+        root.lastMessage=root.copyFailureCount+" file" +(root.copyFailureCount===1?"":"s")+" couldnt be copied";
       }else if(copiedFile){
         root.lastMessage="File"+(root.copyFailureCount===1?"":"s")+" added";
       }
@@ -517,7 +409,7 @@ ExpandableModule{
     }
 
     onExited:function(exitCode){
-      if(exitCode===0)root.lastMessage="File deleted";
+      if(exitCode===0)root.lastMessage="Archivo eliminado";
       root.refreshFiles();
     }
   }
@@ -597,137 +489,18 @@ ExpandableModule{
     }
   }
 
-  Process{
-    id:ipProcess
-
-    stdout:StdioCollector{
-      onStreamFinished:{
-        root.shareIp=this.text.trim();
-        root.tryFinalizeShareUrl();
-      }
-    }
-
-    onExited:function(exitCode){
-      if(exitCode!==0&&root.sharing&&root.shareIp===""){
-        root.shareStatusMessage="Could not detect the local IP address";
-      }
-    }
-  }
-
-  Process{
-    id:shareSetupProcess
-
-    stderr:StdioCollector{
-      onStreamFinished:{
-        let error=this.text.trim();
-        if(error!=="")root.shareStatusMessage=error;
-      }
-    }
-
-    onExited:function(exitCode){
-      if(!root.sharing)return;
-
-      if(exitCode!==0){
-        root.resetShareState("Could not prepare the shared directory");
-        return;
-      }
-
-      shareServerProcess.exec([
-        "python3","-u","-m","http.server","0",
-        "--directory",root.shareDir,
-        "--bind","0.0.0.0"
-      ]);
-    }
-  }
-
-  // Read the long-running server's startup line as it streams.
-  Process{
-    id:shareServerProcess
-
-    stdout:SplitParser{
-      onRead:(line)=>root.handleShareServerLine(line)
-    }
-
-    stderr:SplitParser{
-      onRead:(line)=>root.handleShareServerLine(line)
-    }
-
-    onExited:function(exitCode){
-      let dirToClean=root.shareDir;
-      let failedToStart=root.sharing&&root.sharePort===0;
-
-      root.resetShareState(failedToStart
-        ?"Could not start the server (is python3 installed?)"
-        :"Share stopped");
-
-      if(dirToClean!=="")shareCleanupProcess.exec(["rm","-rf",dirToClean]);
-    }
-  }
-
-  Process{
-    id:qrProcess
-
-    stderr:StdioCollector{
-      onStreamFinished:{
-        let error=this.text.trim();
-        if(error!=="")root.shareStatusMessage="Could not generate the QR code (is qrencode installed?)";
-      }
-    }
-
-    onExited:function(exitCode){
-      if(!root.sharing)return;
-
-      if(exitCode!==0){
-        root.qrReady=false;
-        root.shareStatusMessage="Could not generate the QR code (is qrencode installed?)";
-        return;
-      }
-
-      qrFileCheckProcess.exec(["test","-s",root.qrPath]);
-    }
-  }
-
-  Process{
-    id:qrFileCheckProcess
-
-    onExited:function(exitCode){
-      if(!root.sharing)return;
-
-      root.qrReady=(exitCode===0);
-      if(exitCode!==0)
-        root.shareStatusMessage="The QR code file was not created";
-    }
-  }
-
-  Process{id:shareCleanupProcess}
-
   Timer{
     interval:3000
-    running:root.storageReady&&(root.expanded||root.sharing)
+    running:root.storageReady
     repeat:true
     onTriggered:root.refreshFiles()
   }
 
   Timer{
     interval:4000
-    running:root.storageReady&&(root.expanded||root.printing)
+    running:root.storageReady
     repeat:true
     onTriggered:root.refreshPrinterStatus()
-  }
-
-  Timer{
-    id:shareTimeoutTimer
-    interval:1000
-    repeat:true
-    running:false
-    onTriggered:{
-      root.shareSecondsLeft--;
-      if(root.shareSecondsLeft<=0)root.stopSharing();
-    }
-  }
-
-  Component.onDestruction:{
-    if(shareServerProcess.running)shareServerProcess.signal(15);
   }
 
   collapsedContent:Component{
@@ -736,39 +509,23 @@ ExpandableModule{
 
       RowLayout{
         anchors.fill:parent
-        anchors.leftMargin:10
+        anchors.leftMargin:12
         anchors.rightMargin:12
         spacing:10
 
-        Rectangle{
-          Layout.preferredWidth:30
-          Layout.preferredHeight:30
-          radius:8
-          color:root.printing?"#33f9e2af"
-              :root.sharing?"#331793d1"
-              :"#1affffff"
-
-          Text{
-            anchors.centerIn:parent
-            text:root.printing?""
-                :root.sharing?"󰐷"
-                :"󰈙"
-            color:root.printing?"#f9e2af"
-                :root.sharing?"#1793d1"
-                :"#cdd6f4"
-            font.pixelSize:16
-          }
+        Text{
+          text:root.printing?"󰐊":"󰈙"
+          color:root.printing?"#f9e2af":"#cdd6f4"
+          font.pixelSize:20
         }
 
         ColumnLayout{
           Layout.fillWidth:true
-          spacing:1
+          spacing:0
 
           Text{
             Layout.fillWidth:true
-            text:root.printing?"Printing"
-                :root.sharing?"Sharing"
-                :"File drawer"
+            text:root.printing?"Imprimiendo":"Bandeja"
             color:"#cdd6f4"
             font.pixelSize:12
             font.bold:true
@@ -778,25 +535,13 @@ ExpandableModule{
           Text{
             Layout.fillWidth:true
             text:root.printing
-              ?(root.printIndex+" / "+root.printTotal)
-             :root.sharing
-                ?(root.shareUrl!==""
-                ?"Active · "+root.formatCountdown(root.shareSecondsLeft)
-                :"Preparing...")
-             :(root.files.length+" file"+
-               (root.files.length===1?"":"s"))
-            color:root.printing?"#f9e2af":root.sharing?"#1793d1":"#a6adc8"
+              ?(root.printIndex + " / " + root.printTotal)
+             :(root.files.length + " archivo" +
+               (root.files.length === 1?"":"s"))
+            color:root.printing?"#f9e2af":"#a6adc8"
             font.pixelSize:10
             elide:Text.ElideRight
           }
-        }
-
-        Rectangle{
-          Layout.preferredWidth:7
-          Layout.preferredHeight:7
-          radius:3.5
-          visible:root.printing||root.sharing
-          color:root.printing?"#f9e2af":"#a6e3a1"
         }
       }
     }
@@ -810,6 +555,26 @@ ExpandableModule{
       ColumnLayout{
         anchors.fill:parent
         spacing:6
+
+        RowLayout{
+          Layout.fillWidth:true
+
+          Text{
+            text:"BANDEJA DE ARCHIVOS"
+            color:"#1793d1"
+            font.pixelSize:10
+            font.bold:true
+            font.letterSpacing:1
+          }
+
+          Item{ Layout.fillWidth:true }
+
+          Text{
+            text:root.files.length
+            color:"#6c7086"
+            font.pixelSize:10
+          }
+        }
 
         Item{
           Layout.fillWidth:true
@@ -905,74 +670,24 @@ ExpandableModule{
           elide:Text.ElideRight
         }
 
-        Rectangle{
-          Layout.fillWidth:true
-          Layout.maximumWidth:260
-          Layout.preferredHeight:Math.min(260,width)
-          Layout.alignment:Qt.AlignHCenter
-          visible:root.sharing
-          radius:6
-          color:"#181825"
-
-          Image{
-            anchors.fill:parent
-            anchors.margins:8
-            source:root.qrReady?root.pathToUrl(root.qrPath):""
-            fillMode:Image.PreserveAspectFit
-            smooth:true
-            cache:false
-            visible:root.qrReady
-          }
-
-          Text{
-            anchors.centerIn:parent
-            visible:!root.qrReady
-            text:"···"
-            color:"#181825"
-            font.pixelSize:16
-            font.bold:true
-          }
-        }
-
         RowLayout{
           Layout.fillWidth:true
-          spacing:8
-
-          Item{Layout.fillWidth:true}
+          spacing:6
 
           Rectangle{
-            Layout.preferredWidth:34
-            Layout.preferredHeight:34
-            radius:17
-            color:root.printing||root.copying||root.files.length===0
-              ?"#313244":"#1affffff"
-
-            Text{
-              anchors.centerIn:parent
-              text:"󰆴"
-              color:root.printing||root.copying||root.files.length===0
-                ?"#6c7086":"#cdd6f4"
-              font.pixelSize:17
-            }
-
-            TapHandler{
-              enabled:!root.printing&&!root.copying&&root.files.length>0
-              onTapped:root.clearFiles()
-            }
-          }
-
-          Rectangle{
-            Layout.preferredWidth:34
-            Layout.preferredHeight:34
-            radius:17
+            Layout.fillWidth:true
+            implicitHeight:30
+            radius:6
             color:root.printing?"#6c7086":
              (root.files.length>0&&!root.copying?"#1793d1":"#313244")
+            opacity:root.printing||root.files.length>0 && !root.copying?1:0.65
 
             Text{
               anchors.centerIn:parent
-              text:root.printing?"󰜺":""
+              text:root.printing?"󰜺  Stop":"  Print"
               color:root.printing||root.files.length>0?"#11111b":"#6c7086"
-              font.pixelSize:17
+              font.pixelSize:10
+              font.bold:true
             }
 
             TapHandler{
@@ -982,23 +697,23 @@ ExpandableModule{
           }
 
           Rectangle{
-            Layout.preferredWidth:34
-            Layout.preferredHeight:34
-            radius:17
-            color:root.sharing?"#f38ba8"
-                :(root.printing||root.copying||root.files.length===0?"#313244":"#1affffff")
+            Layout.preferredWidth:66
+            implicitHeight:30
+            radius:6
+            color:root.printing||root.copying||root.files.length===0
+              ?"#313244":"#1affffff"
 
             Text{
               anchors.centerIn:parent
-              text:root.sharing?"󰅖":"󰐷"
-              color:root.sharing?"#11111b"
-                  :(root.printing||root.copying||root.files.length===0?"#6c7086":"#cdd6f4")
-              font.pixelSize:17
+              text:"Vaciar"
+              color:root.printing||root.copying||root.files.length===0
+                ?"#6c7086":"#cdd6f4"
+              font.pixelSize:10
             }
 
             TapHandler{
-              enabled:root.sharing||(!root.printing&&!root.copying&&root.files.length>0)
-              onTapped:root.sharing?root.stopSharing():root.startSharing()
+              enabled:!root.printing&&!root.copying&&root.files.length>0
+              onTapped:root.clearFiles()
             }
           }
         }
