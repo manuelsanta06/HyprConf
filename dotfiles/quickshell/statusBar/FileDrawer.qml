@@ -8,7 +8,6 @@ import "../components"
 
 ExpandableModule{
   id:root
-  textOnBottom:true
 
   // The directory is the source of truth.
   // If a copy disappears, it disappears from the drawer too.
@@ -56,6 +55,7 @@ ExpandableModule{
   readonly property int shareTimeoutSeconds:600
   property int    shareSecondsLeft:0
 
+  textOnBottom:true
   collapsedHeight:46
   expandedHeight:{
     let base=Math.min(300,Math.max(150,92+Math.min(root.files.length,6)*30));
@@ -92,6 +92,23 @@ ExpandableModule{
 
   function fileNameFromPath(path){
     return path.substring(path.lastIndexOf("/")+1);
+  }
+
+  function formatFileSize(bytes){
+    let size=Number(bytes);
+    let units=["B","KiB","MiB","GiB","TiB","PiB"];
+    let unitIndex=0;
+
+    if(!isFinite(size)||size<0)return "? B";
+
+    while(size>=1024&&unitIndex<units.length-1){
+      size/=1024;
+      unitIndex++;
+    }
+
+    if(unitIndex===0)return Math.round(size)+" "+units[unitIndex];
+    return size<10?size.toFixed(1)+" "+units[unitIndex]
+      :Math.round(size)+" "+units[unitIndex];
   }
 
   function fileNameFromWebUrl(url) {
@@ -141,7 +158,7 @@ ExpandableModule{
     fileScanner.exec([
       "find",root.drawerDirectory,
       "-mindepth","1","-maxdepth","1","-type","f",
-      "-printf","%f\\n"
+      "-printf","%s\\t%f\\n"
     ]);
   }
 
@@ -456,18 +473,28 @@ ExpandableModule{
 
     stdout:StdioCollector{
       onStreamFinished:{
-        let names=this.text.trim()===""
+        let lines=this.text.trim()===""
           ?[]:this.text.trim().split(/\r?\n/);
-        names.sort();
 
         let nextFiles=[];
-        for(let i=0;i<names.length;i++){
-          if(names[i]==="")continue;
+        for(let i=0;i<lines.length;i++){
+          if(lines[i]==="")continue;
+
+          let separator=lines[i].indexOf("\t");
+          let size=separator===-1
+            ?0:Number(lines[i].substring(0,separator));
+          let name=separator===-1
+            ?lines[i]:lines[i].substring(separator+1);
+
+          if(name==="")continue;
           nextFiles.push({
-            name:names[i],
-            path:root.drawerDirectory+"/"+names[i]
+            name:name,
+            path:root.drawerDirectory+"/"+name,
+            size:size
           });
         }
+
+        nextFiles.sort((a,b)=>a.name<b.name?-1:a.name>b.name?1:0);
         root.files=nextFiles;
       }
     }
@@ -828,6 +855,7 @@ ExpandableModule{
           ListView{
             anchors.fill:parent
             visible:root.files.length>0
+            // verticalLayoutDirection:ListView.BottomToTop
             model:root.files
             spacing:4
             clip:true
@@ -850,13 +878,23 @@ ExpandableModule{
               Text{
                 anchors.left:parent.left
                 anchors.leftMargin:8
-                anchors.right:deleteButton.left
+                anchors.right:fileSizeText.left
                 anchors.rightMargin:4
                 anchors.verticalCenter:parent.verticalCenter
                 text:"󰈙  "+fileData.name
                 color:"#cdd6f4"
                 font.pixelSize:10
                 elide:Text.ElideRight
+              }
+
+              Text{
+                id:fileSizeText
+                anchors.right:deleteButton.left
+                anchors.rightMargin:8
+                anchors.verticalCenter:parent.verticalCenter
+                text:root.formatFileSize(fileData.size)
+                color:"#6c7086"
+                font.pixelSize:9
               }
 
               Drag.active:fileDragHandler.active&&!root.printing
