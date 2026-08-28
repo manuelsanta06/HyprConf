@@ -1,7 +1,6 @@
 -- PROGRAMS
 local terminal    ="kitty"
 local fileManager =terminal .. ' yazi "$(cat /tmp/scdf)"'
-local menu        ="~/.config/rofi/launcher.sh"
 
 -- AUTOSTART
 hl.on("hyprland.start",function()
