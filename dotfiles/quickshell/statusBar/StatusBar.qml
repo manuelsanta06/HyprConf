@@ -89,7 +89,7 @@ PanelWindow{
       spacing:8
 
       // TOP
-      Options{}
+      Options{active:root.revealed}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
       WorkspaceWidget{}

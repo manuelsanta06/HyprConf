@@ -46,11 +46,16 @@ hl.config({
     rounding=10,
     blur={
       enabled=true,
-      size=8,
-      passes=1,
+      brightness=1.0,
       noise=0.0,
       xray=true,
+
+      size=10,
+      passes=1,
+
       special=false,
+
+      -- varian="glass"
     },
     shadow={
       enabled=true,

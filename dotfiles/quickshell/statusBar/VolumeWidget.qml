@@ -1,108 +1,72 @@
 import QtQuick
-import QtQuick.Layouts
 import Quickshell.Io
 
-Item {
+SliderWidget{
   id: root
-  Layout.fillWidth: true
-  implicitHeight: 40
 
-  property real vol: 0
-  property bool isMuted: false
+  property real vol:0
+  property bool isMuted:false
 
-  function updateInfo() {
-    volFetcher.running = true;
+  level:Math.max(0,Math.min(1,root.vol))
+  icon:root.isMuted?"󰝟":(root.vol>0.5?"":"")
+  progressColor:root.isMuted?"#6c7086":"#89b4fa"
+  iconColor: root.level > 0.15?"#0f0f14":"#89b4fa"
+  valueText: Math.round(root.vol*100)+"%"
+  valueColor: root.level>0.85?"#0f0f14":"#cdd6f4"
+  secondaryActionEnabled:true
+
+  function updateInfo(){
+    if(!root.active)return;
+    volFetcher.running=true;
   }
 
-  Process {
-    id: volFetcher
-    command: ["sh", "-c", "wpctl get-volume @DEFAULT_AUDIO_SINK@"]
-    stdout: StdioCollector {
-      onStreamFinished: {
-        let output = this.text.trim();
-        let parts = output.split(" ");
-        if (parts.length >= 2) {
-          root.vol = parseFloat(parts[1]);
-          root.isMuted = output.includes("[MUTED]");
+  function setVolume(requestedLevel){
+    const nextVolume=Math.max(0,Math.min(1,requestedLevel));
+    root.vol=nextVolume;
+
+    if(root.isMuted){
+      root.isMuted=false;
+      muteSetter.exec(["wpctl","set-mute","@DEFAULT_AUDIO_SINK@","0"]);
+    }
+
+    volumeSetter.exec(["wpctl","set-volume","@DEFAULT_AUDIO_SINK@",nextVolume.toFixed(2),]);
+  }
+
+  function toggleMute(){
+    const nextMuted=!root.isMuted;
+    root.isMuted=nextMuted;
+    muteSetter.exec(["wpctl","set-mute","@DEFAULT_AUDIO_SINK@",nextMuted?"1":"0"]);
+  }
+
+  onLevelRequested:(requestedLevel)=>root.setVolume(requestedLevel)
+  onSecondaryActionRequested:root.toggleMute()
+
+  Component.onCompleted:if(root.active)root.updateInfo()
+  onActiveChanged:{
+    if(root.active){
+      root.updateInfo();
+    }else{
+      volFetcher.running=false;
+    }
+  }
+
+  Process{
+    id:volFetcher
+    command:["wpctl","get-volume","@DEFAULT_AUDIO_SINK@"]
+
+    stdout: StdioCollector{
+      onStreamFinished:{
+        const output=this.text.trim();
+        const value=parseFloat(output.split(/\s+/)[1]);
+
+        if(!isNaN(value)){
+          root.vol=Math.max(0,Math.min(1,value));
+          root.isMuted=output.includes("[MUTED]");
         }
       }
     }
   }
 
-  Process { id: volSetter }
-
-  Component.onCompleted: updateInfo()
-  
-  
-  Timer {
-    interval: 2000
-    running: true; repeat: true
-    onTriggered: updateInfo()
-  }
-
-  
-  Rectangle {
-    anchors.fill: parent
-    radius: 8
-    color: "#1affffff"
-    clip: true
-
-    
-    Rectangle {
-      id: progress
-      width: parent.width * Math.min(root.vol, 1.0)
-      height: parent.height
-      color: root.isMuted ? "#6c7086" : "#89b4fa"
-      radius: 8
-      
-      Behavior on width { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-      Behavior on color { ColorAnimation { duration: 200 } }
-    }
-
-    RowLayout {
-      anchors.fill: parent
-      anchors.leftMargin: 12; anchors.rightMargin: 12
-      
-      Text {
-        text: root.isMuted ? "󰝟" : (root.vol > 0.5 ? "" : "")
-        color: root.vol > 0.15 ? "#0f0f14" : "#89b4fa"
-        font.pixelSize: 14
-      }
-
-      Item { Layout.fillWidth: true }
-
-      Text {
-        text: Math.round(root.vol * 100) + "%"
-        color: root.vol > 0.85 ? "#0f0f14" : "#cdd6f4"
-        font.pixelSize: 11; font.bold: true
-      }
-    }
-
-    MouseArea {
-      anchors.fill: parent
-      preventStealing: true
-      acceptedButtons: Qt.LeftButton | Qt.RightButton
-      onPositionChanged: (mouse) => { if (mouse.buttons & Qt.LeftButton) update(mouse) }
-      onPressed: (mouse) => {
-        if (mouse.button === Qt.RightButton) {
-          volSetter.exec(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", root.isMuted ? "0" : "1"]);
-          root.isMuted = !root.isMuted;
-        } else {
-          update(mouse)
-        }
-      }
-      
-      function update(mouse) {
-        let pct = Math.max(0, Math.min(1.5, mouse.x / width)); 
-        root.vol = pct;
-        volSetter.exec(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.min(pct, 1.0).toFixed(2)]);
-        
-        
-        if (root.isMuted) {
-          volSetter.exec(["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "0"]);
-          root.isMuted = false;
-        }
-      }
-    }
-  }
+  Process{id:volumeSetter}
+  Process{id:muteSetter}
 }

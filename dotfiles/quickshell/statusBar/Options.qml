@@ -4,6 +4,8 @@ import "../components"
 
 ExpandableModule{
   id:optionsMenu
+
+  property bool active:false
   
   collapsedHeight:50
   expandedHeight:110
@@ -32,8 +34,8 @@ ExpandableModule{
       anchors.topMargin:0
       spacing:12
 
-      VolumeWidget{}
-      BrightnessWidget{}
+      VolumeWidget{active:optionsMenu.active}
+      BrightnessWidget{active:optionsMenu.active}
     }
   }
 }
