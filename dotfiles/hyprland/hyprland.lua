@@ -134,7 +134,6 @@ hl.gesture({
 -- WINDOWS AND WORKSPACES
 
 hl.workspace_rule({workspace="w[tv1]",gaps_out=0,gaps_in=0})
--- hl.workspace_rule({workspace = "f[1]",   gaps_out = 0, gaps_in = 0 })
 hl.window_rule({
     name        = "no-gaps-wtv1",
     match       = {workspace="w[tv1]",float=false},
@@ -142,14 +141,18 @@ hl.window_rule({
     rounding    = 0,
 })
 
--- Ignorar eventos maximize
 hl.window_rule({
     name          = "suppress-maximize-events",
     match         = {class=".*"},
     suppress_event= "maximize",
 })
 
--- Picture-in-Picture
+hl.window_rule({
+    name  = "windowkill-no-xray",
+    match = {class="windowkill"},
+    xray  = false,
+})
+
 hl.window_rule({
     name  = "picture-in-picture",
     match = {title="(.*)(Picture-in-Picture)(.*)"},
@@ -159,7 +162,6 @@ hl.window_rule({
     size  = "monitor_w*0.3 monitor_h*0.3",
 })
 
--- dragon-drop
 hl.window_rule({
     name  = "dragon-drop",
     match = {class="dragon-drop"},
@@ -167,7 +169,6 @@ hl.window_rule({
     pin   = true,
 })
 
--- kitty-monitor
 hl.window_rule({
     name        = "kitty-monitor",
     match       = {class="kitty-monitor"},
@@ -180,7 +181,6 @@ hl.window_rule({
     opacity     = "1.0 override 1.0 override",
 })
 
--- pinentry
 hl.window_rule({
     name         = "pinentry",
     match        = {class="(pinentry-)(.*)"},
