@@ -8,6 +8,14 @@ import "../components"
 ExpandableModule{
   id:mediaModule
   property var player: getBestPlayer(Mpris.players.values)
+  property bool notificationEnabled:true
+  property string lastTrackKey:""
+  property bool trackBaselineReady:false
+  property string pendingNotificationKey:""
+  property string pendingNotificationTitle:""
+  property string pendingNotificationBody:""
+  property string pendingNotificationIcon:""
+  property string artworkCachePath:Quickshell.cachePath("media-player-art.png")
 
   function getBestPlayer(players){
     if(players.length===0)return null;
@@ -18,6 +26,118 @@ ExpandableModule{
     for (let i=0;i<players.length;i++)if(players[i].playbackStatus===1)return players[i];
     return players[0];
   }
+
+  function getTrackKey(currentPlayer){
+    if(!currentPlayer)return "";
+    let playerKey=currentPlayer.dbusName||currentPlayer.identity||"player";
+    if(currentPlayer.uniqueId!==undefined&&currentPlayer.uniqueId!==null&&currentPlayer.uniqueId!==0)
+      return playerKey+"\u001f"+currentPlayer.uniqueId;
+    return [
+      playerKey,
+      currentPlayer.trackTitle,
+      currentPlayer.trackAlbum,
+      currentPlayer.trackArtist
+    ].join("\u001f");
+  }
+
+  function scheduleTrackNotification(){
+    if(!mediaModule.notificationEnabled||!mediaModule.player)return;
+    let trackKey=mediaModule.getTrackKey(mediaModule.player);
+    if(trackKey==="")return;
+
+    if(!mediaModule.trackBaselineReady){
+      mediaModule.lastTrackKey=trackKey;
+      mediaModule.trackBaselineReady=true;
+      return;
+    }
+
+    if(trackKey===mediaModule.lastTrackKey)return;
+    mediaModule.lastTrackKey=trackKey;
+
+    if(mediaModule.player.playbackState===MprisPlaybackState.Playing){
+      notificationTimer.restart();
+    }
+  }
+
+  function getNotificationIcon(url){
+    if(!url)return "";
+    if(!url.startsWith("file://"))return url;
+    try{return decodeURIComponent(url.slice(7));}
+    catch(error){return url.slice(7);}
+  }
+
+  function sendTrackNotification(title,body,icon){
+    let command=["notify-send","-a","Media Player"];
+    if(icon!=="")command.push("-i",icon);
+    command.push(title,body);
+    Quickshell.execDetached(command);
+  }
+
+  function prepareTrackNotification(){
+    if(!mediaModule.notificationEnabled)return;
+    let currentPlayer=mediaModule.player;
+    if(!currentPlayer||currentPlayer.playbackState!==MprisPlaybackState.Playing)return;
+
+    mediaModule.pendingNotificationKey=mediaModule.getTrackKey(currentPlayer);
+    mediaModule.pendingNotificationTitle=currentPlayer.trackTitle||"Unknown Title";
+    mediaModule.pendingNotificationBody=(currentPlayer.trackAlbum||"Unknown Album")
+      +" - "+(currentPlayer.trackArtist||"Unknown Artist");
+    let icon=mediaModule.getNotificationIcon(currentPlayer.trackArtUrl);
+
+    if(icon.startsWith("http://")||icon.startsWith("https://")){
+      mediaModule.pendingNotificationIcon=mediaModule.artworkCachePath;
+      artworkDownloader.exec([
+        "curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--connect-timeout","2",
+        "--max-time","5",
+        "--output",mediaModule.artworkCachePath,
+        icon
+      ]);
+      return;
+    }
+
+    mediaModule.pendingNotificationIcon=icon;
+    mediaModule.sendTrackNotification(
+      mediaModule.pendingNotificationTitle,
+      mediaModule.pendingNotificationBody,
+      mediaModule.pendingNotificationIcon
+    );
+  }
+
+  onPlayerChanged:{
+    notificationTimer.stop();
+    mediaModule.lastTrackKey="";
+    mediaModule.trackBaselineReady=false;
+    baselineTimer.restart();
+  }
+
+  Connections{
+    target:mediaModule.player
+    function onTrackChanged(){mediaModule.scheduleTrackNotification()}
+    function onPostTrackChanged(){mediaModule.scheduleTrackNotification()}
+  }
+
+  Timer{
+    id:notificationTimer
+    interval:200
+    repeat:false
+    onTriggered:mediaModule.prepareTrackNotification()
+  }
+
+  Timer{
+    id:baselineTimer
+    interval:250
+    repeat:false
+    onTriggered:{
+      mediaModule.lastTrackKey=mediaModule.getTrackKey(mediaModule.player);
+      mediaModule.trackBaselineReady=mediaModule.lastTrackKey!=="";
+    }
+  }
+
   visible:player!==null
 
   clickeable:true
@@ -32,6 +152,23 @@ ExpandableModule{
   property int cavaBars:30
   property real cavaGain: 1.8
   property var audioLevels:Array(cavaBars).fill(0)
+
+  Process{
+    id:artworkDownloader
+    onExited:(exitCode)=>{
+      let currentPlayer=mediaModule.player;
+      let currentKey=currentPlayer?mediaModule.getTrackKey(currentPlayer):"";
+      if(exitCode===0&&currentPlayer&&currentPlayer.playbackState===MprisPlaybackState.Playing
+        &&mediaModule.pendingNotificationKey===currentKey
+        &&mediaModule.pendingNotificationIcon===mediaModule.artworkCachePath){
+        mediaModule.sendTrackNotification(
+          mediaModule.pendingNotificationTitle,
+          mediaModule.pendingNotificationBody,
+          mediaModule.pendingNotificationIcon
+        );
+      }
+    }
+  }
 
   Process{
     id:cavaProcess

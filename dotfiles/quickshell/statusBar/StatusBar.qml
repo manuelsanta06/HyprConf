@@ -94,7 +94,7 @@ PanelWindow{
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
       WorkspaceWidget{}
       GithubStreak{textBottom:false}
-      MediaPLayer{}
+      MediaPLayer{notificationEnabled:modelData===Quickshell.screens[0]}
 
       // MIDDLE
       Item{Layout.fillHeight:true}
