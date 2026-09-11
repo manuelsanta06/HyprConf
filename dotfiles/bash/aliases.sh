@@ -7,6 +7,7 @@ alias ls='ls --color=auto'
 alias cls='clear; fastfetch'
 alias please='sudo'
 alias pls='sudo'
+alias tree='tree --condense -F'
 alias ln='ln -s'
 alias :q='exit'
 
