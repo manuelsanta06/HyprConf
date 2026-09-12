@@ -44,10 +44,9 @@ ExpandableModule{
 
   // Temporary LAN share (python http.server + qrencode)
   property bool   sharing:false
-  property string shareToken:""
-  property string shareDir:""
-  property string shareIp:""
+  property string shareHost:""
   property int    sharePort:0
+  readonly property int shareListenPort:8765
   property string shareUrl:""
   property string qrPath:""
   property bool   qrReady:false
@@ -357,14 +356,6 @@ ExpandableModule{
     if(activeJobs===0)root.finishPrinting(false);
   }
 
-  function randomToken(length){
-    let chars="abcdefghijklmnopqrstuvwxyz0123456789";
-    let token="";
-    for(let i=0;i<length;i++)
-      token+=chars.charAt(Math.floor(Math.random()*chars.length));
-    return token;
-  }
-
   function formatCountdown(totalSeconds){
     let seconds=totalSeconds<0?0:totalSeconds;
     let minutes=Math.floor(seconds/60);
@@ -372,41 +363,38 @@ ExpandableModule{
     return minutes+":"+(remainder<10?"0":"")+remainder;
   }
 
-  // Serve drawerDirectory over the LAN through a random, unguessable path.
-  // The token is a symlink inside a temporary directory, so file changes
-  // made while sharing are visible without restarting the server.
+  // Serve drawerDirectory directly from the fixed share URL.
   function startSharing(){
     if(root.sharing||root.printing||root.files.length===0)return;
 
-    root.shareToken=root.randomToken(10);
-    root.shareDir="/tmp/statusbar-share-"+root.shareToken;
-    root.qrPath=root.shareDir+"/.share-qr.svg";
-    root.shareIp="";
+    root.qrPath=Quickshell.cachePath("statusbar-share-qr.svg");
+    root.shareHost="";
     root.sharePort=0;
     root.shareUrl="";
     root.qrReady=false;
     root.shareStatusMessage="Preparing link...";
     root.sharing=true;
 
-    shareSetupProcess.exec(["sh","-c",
-      "mkdir -p '"+root.shareDir+"' && ln -sfn '"+root.drawerDirectory+"' '"+root.shareDir+"/"+root.shareToken+"'"
+    shareServerProcess.exec([
+      "python3","-u","-m","http.server",root.shareListenPort.toString(),
+      "--directory",root.drawerDirectory,
+      "--bind","0.0.0.0"
     ]);
 
-    ipProcess.exec(["sh","-c","ip route get 1.1.1.1 | awk '{print $7; exit}'"]);
+    hostProcess.exec(["uname","-n"]);
   }
 
   function stopSharing(){
     if(!root.sharing&&!shareServerProcess.running)return;
 
-    let dirToClean=root.shareDir;
+    let qrToClean=root.qrPath;
     root.resetShareState("Share stopped");
 
-    if(ipProcess.running)ipProcess.signal(15);
-    if(shareSetupProcess.running)shareSetupProcess.signal(15);
+    if(hostProcess.running)hostProcess.signal(15);
     if(shareServerProcess.running)shareServerProcess.signal(15);
     if(qrProcess.running)qrProcess.signal(15);
     if(qrFileCheckProcess.running)qrFileCheckProcess.signal(15);
-    if(dirToClean!=="")shareCleanupProcess.exec(["rm","-rf",dirToClean]);
+    if(qrToClean!=="")shareCleanupProcess.exec(["rm","-f",qrToClean]);
   }
 
   function resetShareState(message){
@@ -414,15 +402,15 @@ ExpandableModule{
     root.shareUrl="";
     root.qrReady=false;
     root.sharePort=0;
-    root.shareIp="";
+    root.shareHost="";
     shareTimeoutTimer.stop();
     if(message!==undefined)root.shareStatusMessage=message;
   }
 
   function tryFinalizeShareUrl(){
-    if(!root.sharing||root.sharePort===0||root.shareIp==="")return;
+    if(!root.sharing||root.sharePort===0||root.shareHost==="")return;
 
-    root.shareUrl="http://"+root.shareIp+":"+root.sharePort+"/"+root.shareToken+"/";
+    root.shareUrl="http://"+root.shareHost+".local:"+root.sharePort+"/";
     root.shareStatusMessage="Link ready";
     root.shareSecondsLeft=root.shareTimeoutSeconds;
     shareTimeoutTimer.restart();
@@ -625,45 +613,19 @@ ExpandableModule{
   }
 
   Process{
-    id:ipProcess
+    id:hostProcess
 
     stdout:StdioCollector{
       onStreamFinished:{
-        root.shareIp=this.text.trim();
+        root.shareHost=this.text.trim();
         root.tryFinalizeShareUrl();
       }
     }
 
     onExited:function(exitCode){
-      if(exitCode!==0&&root.sharing&&root.shareIp===""){
-        root.shareStatusMessage="Could not detect the local IP address";
+      if(exitCode!==0&&root.sharing&&root.shareHost===""){
+        root.shareStatusMessage="Could not detect the device hostname";
       }
-    }
-  }
-
-  Process{
-    id:shareSetupProcess
-
-    stderr:StdioCollector{
-      onStreamFinished:{
-        let error=this.text.trim();
-        if(error!=="")root.shareStatusMessage=error;
-      }
-    }
-
-    onExited:function(exitCode){
-      if(!root.sharing)return;
-
-      if(exitCode!==0){
-        root.resetShareState("Could not prepare the shared directory");
-        return;
-      }
-
-      shareServerProcess.exec([
-        "python3","-u","-m","http.server","0",
-        "--directory",root.shareDir,
-        "--bind","0.0.0.0"
-      ]);
     }
   }
 
@@ -680,14 +642,14 @@ ExpandableModule{
     }
 
     onExited:function(exitCode){
-      let dirToClean=root.shareDir;
+      let qrToClean=root.qrPath;
       let failedToStart=root.sharing&&root.sharePort===0;
 
       root.resetShareState(failedToStart
         ?"Could not start the server (is python3 installed?)"
         :"Share stopped");
 
-      if(dirToClean!=="")shareCleanupProcess.exec(["rm","-rf",dirToClean]);
+      if(qrToClean!=="")shareCleanupProcess.exec(["rm","-f",qrToClean]);
     }
   }
 
