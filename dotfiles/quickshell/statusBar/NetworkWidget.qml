@@ -8,9 +8,9 @@ ExpandableModule{
   id:netWidget
   
   collapsedHeight:45
-  expandedHeight:0 
+  expandedHeight:0
   clickeable:true
-  implicitHeight:collapsedHeight
+  // implicitHeight:collapsedHeight
 
   property string ssid:"Searching..."
   property string type:"wifi"
