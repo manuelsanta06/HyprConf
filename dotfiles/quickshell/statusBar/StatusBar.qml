@@ -3,6 +3,7 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
+import Quickshell.Io
 
 PanelWindow{
   id: root
@@ -34,6 +35,17 @@ PanelWindow{
 
 
   property bool revealed:false
+  readonly property int defaultShowDurationMs:3000
+
+  function showFor(durationMs:int):void{
+    const duration=Math.max(500,durationMs>0?durationMs:root.defaultShowDurationMs);
+    hideTimer.stop();
+    fileDrawer.refreshFiles();
+    fileDrawer.expanded=true;
+    root.revealed=true;
+    externalHideTimer.interval=duration;
+    externalHideTimer.restart();
+  }
 
   // Keep a small input strip alive while the bar is hidden.
   Item{
@@ -48,6 +60,28 @@ PanelWindow{
     interval:root.hideDelayMs
     repeat:false
     onTriggered:root.revealed=false
+  }
+
+  Timer{
+    id:externalHideTimer
+    repeat:false
+    onTriggered: {
+      if(rootHover.hovered)hideTimer.restart();
+      else root.revealed=false;
+    }
+  }
+
+  IpcHandler{
+    target:"statusbar"
+    enabled:modelData===Quickshell.screens[0]
+
+    function show():void{
+      root.showFor(root.defaultShowDurationMs);
+    }
+
+    function showFor(durationMs:int):void{
+      root.showFor(durationMs);
+    }
   }
 
   HoverHandler{

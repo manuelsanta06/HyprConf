@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+drawer_dir="${DRAWER_DIR:-$HOME/.cache/statusbar/fileDrawer}"
+duration_ms="${DRAWER_SHOW_MS:-2000}"
+mode="copy"
+paths=()
+
+usage(){
+  printf 'Usage: drawer [--move] [--duration milliseconds] FILE...\n'
+  printf '\nCopy files or directories into the FileDrawer and reveal the status bar.\n'
+}
+
+is_number(){
+  [[ "$1" =~ ^[0-9]+$ ]]
+}
+
+path_exists(){
+  [[ -e "$1" || -L "$1" ]]
+}
+
+unique_destination(){
+  local original_name="$1"
+  local stem="$original_name"
+  local extension=""
+  local dot_index
+  local candidate
+  local suffix=1
+
+  dot_index="${original_name##*.}"
+  if [[ "$original_name" == *.* && "$original_name" != .* && "$dot_index" != "$original_name" ]]; then
+    stem="${original_name%.*}"
+    extension=".${dot_index}"
+  fi
+
+  candidate="$drawer_dir/$original_name"
+  while path_exists "$candidate"; do
+    candidate="$drawer_dir/${stem}(${suffix})${extension}"
+    suffix=$((suffix+1))
+  done
+
+  printf '%s\n' "$candidate"
+}
+
+while (($#>0)); do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -t|--duration)
+      if (($#<2)) || ! is_number "$2"; then
+        printf 'drawer: --duration expects milliseconds\n' >&2
+        exit 2
+      fi
+      duration_ms="$2"
+      shift 2
+      ;;
+    --move)
+      mode="move"
+      shift
+      ;;
+    --)
+      shift
+      paths+=("$@")
+      break
+      ;;
+    -* )
+      printf 'drawer: unknown option: %s\n' "$1" >&2
+      printf 'Try "drawer --help" for usage.\n' >&2
+      exit 2
+      ;;
+    *)
+      paths+=("$1")
+      shift
+      ;;
+  esac
+done
+
+if ((${#paths[@]}==0)); then
+  usage >&2
+  exit 2
+fi
+
+mkdir -p -- "$drawer_dir"
+drawer_realpath="$(realpath -m -- "$drawer_dir")"
+processed=0
+
+for source in "${paths[@]}"; do
+  if ! path_exists "$source"; then
+    printf 'drawer: not found: %s\n' "$source" >&2
+    continue
+  fi
+
+  source_realpath="$(realpath -e -- "$source")"
+  if [[ "$source_realpath" == "$drawer_realpath" || "$source_realpath" == "$drawer_realpath"/* ]]; then
+    printf 'drawer: already inside the FileDrawer: %s\n' "$source" >&2
+    continue
+  fi
+
+  destination="$(unique_destination "$(basename -- "$source_realpath")")"
+  if [[ "$mode" == "move" ]]; then
+    mv -- "$source_realpath" "$destination"
+    printf 'Moved: %s -> %s\n' "$source" "$destination"
+  elif [[ -d "$source_realpath" ]]; then
+    cp -R -- "$source_realpath" "$destination"
+    printf 'Copied: %s -> %s\n' "$source" "$destination"
+  else
+    cp -- "$source_realpath" "$destination"
+    printf 'Copied: %s -> %s\n' "$source" "$destination"
+  fi
+  processed=$((processed+1))
+done
+
+if ((processed==0)); then
+  exit 1
+fi
+
+if ! command -v qs >/dev/null 2>&1; then
+  printf 'drawer: files copied, but qs was not found; the status bar was not revealed\n' >&2
+  exit 0
+fi
+
+if ! qs ipc call statusbar showFor "$duration_ms" >/dev/null 2>&1; then
+  printf 'drawer: files copied, but the running Quickshell instance did not accept IPC\n' >&2
+  exit 0
+fi
