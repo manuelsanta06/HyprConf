@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 drawer_dir="${DRAWER_DIR:-$HOME/.cache/statusbar/fileDrawer}"
 duration_ms="${DRAWER_SHOW_MS:-2000}"
 mode="copy"
-paths=()
+show_statusbar=1
+sources=()
 
 usage(){
-  printf 'Usage: drawer [--move] [--duration milliseconds] FILE...\n'
-  printf '\nCopy files or directories into the FileDrawer and reveal the status bar.\n'
+  printf 'Usage: drawer [--move] [--no-show] [--duration milliseconds] SOURCE...\n'
+  printf '\nCopy files, directories or HTTP(S) URLs into the FileDrawer.\n'
 }
 
 is_number(){
@@ -23,9 +24,9 @@ unique_destination(){
   local original_name="$1"
   local stem="$original_name"
   local extension=""
+  local suffix=1
   local dot_index
   local candidate
-  local suffix=1
 
   dot_index="${original_name##*.}"
   if [[ "$original_name" == *.* && "$original_name" != .* && "$dot_index" != "$original_name" ]]; then
@@ -40,6 +41,21 @@ unique_destination(){
   done
 
   printf '%s\n' "$candidate"
+}
+
+mime_extension(){
+  case "${1,,}" in
+    image/jpeg)printf '.jpg';;
+    image/png)printf '.png';;
+    image/gif)printf '.gif';;
+    image/webp)printf '.webp';;
+    image/avif)printf '.avif';;
+    image/svg+xml)printf '.svg';;
+    application/pdf)printf '.pdf';;
+    video/mp4)printf '.mp4';;
+    audio/mpeg)printf '.mp3';;
+    *)printf '';;
+  esac
 }
 
 while (($#>0)); do
@@ -60,9 +76,13 @@ while (($#>0)); do
       mode="move"
       shift
       ;;
+    --no-show)
+      show_statusbar=0
+      shift
+      ;;
     --)
       shift
-      paths+=("$@")
+      sources+=("$@")
       break
       ;;
     -* )
@@ -71,57 +91,98 @@ while (($#>0)); do
       exit 2
       ;;
     *)
-      paths+=("$1")
+      sources+=("$1")
       shift
       ;;
   esac
 done
 
-if ((${#paths[@]}==0)); then
+if ((${#sources[@]}==0)); then
   usage >&2
   exit 2
 fi
 
 mkdir -p -- "$drawer_dir"
 drawer_realpath="$(realpath -m -- "$drawer_dir")"
-processed=0
+success_count=0
+failure_count=0
 
-for source in "${paths[@]}"; do
+for source in "${sources[@]}"; do
+  if [[ "$source" == http://* || "$source" == https://* ]]; then
+    download_dir="$(mktemp -d "$drawer_dir/.drawer-download.XXXXXX")"
+    if download_info="$(curl --fail --location --silent --show-error \
+      --remote-header-name --remote-name --output-dir "$download_dir" \
+      --write-out '%{filename_effective}\n%{content_type}' "$source")"; then
+      download_name="${download_info%%$'\n'*}"
+      mime_type="${download_info#*$'\n'}"
+      download_name="$(basename -- "$download_name")"
+      [[ -n "$download_name" ]] || download_name="downloaded_file"
+
+      if [[ "$download_name" != *.* ]]; then
+        extension="$(mime_extension "${mime_type%%;*}")"
+        download_name+="$extension"
+      fi
+
+      downloaded_file="$download_dir/$download_name"
+      destination="$(unique_destination "$download_name")"
+      if [[ -f "$downloaded_file" ]] && mv -- "$downloaded_file" "$destination"; then
+        success_count=$((success_count+1))
+      else
+        printf 'Could not store downloaded URL: %s\n' "$source" >&2
+        failure_count=$((failure_count+1))
+      fi
+    else
+      printf 'Could not download URL: %s\n' "$source" >&2
+      failure_count=$((failure_count+1))
+    fi
+    rm -rf -- "$download_dir"
+    continue
+  fi
+
   if ! path_exists "$source"; then
-    printf 'drawer: not found: %s\n' "$source" >&2
+    printf 'Not found: %s\n' "$source" >&2
+    failure_count=$((failure_count+1))
     continue
   fi
 
   source_realpath="$(realpath -e -- "$source")"
   if [[ "$source_realpath" == "$drawer_realpath" || "$source_realpath" == "$drawer_realpath"/* ]]; then
-    printf 'drawer: already inside the FileDrawer: %s\n' "$source" >&2
+    printf 'Already inside the FileDrawer: %s\n' "$source" >&2
+    failure_count=$((failure_count+1))
     continue
   fi
 
   destination="$(unique_destination "$(basename -- "$source_realpath")")"
   if [[ "$mode" == "move" ]]; then
-    mv -- "$source_realpath" "$destination"
-    printf 'Moved: %s -> %s\n' "$source" "$destination"
+    operation=(mv -- "$source_realpath" "$destination")
   elif [[ -d "$source_realpath" ]]; then
-    cp -R -- "$source_realpath" "$destination"
-    printf 'Copied: %s -> %s\n' "$source" "$destination"
+    operation=(cp -R -- "$source_realpath" "$destination")
   else
-    cp -- "$source_realpath" "$destination"
-    printf 'Copied: %s -> %s\n' "$source" "$destination"
+    operation=(cp -- "$source_realpath" "$destination")
   fi
-  processed=$((processed+1))
+
+  if "${operation[@]}"; then
+    success_count=$((success_count+1))
+  else
+    printf 'Could not add: %s\n' "$source" >&2
+    failure_count=$((failure_count+1))
+  fi
 done
 
-if ((processed==0)); then
+if [[ "$mode" == "move" ]]; then
+  action="Moved"
+else
+  action="Copied"
+fi
+printf '%s %d item%s, %d failed\n' "$action" "$success_count" \
+  "$([[ "$success_count" == 1 ]] && printf '' || printf 's')" "$failure_count"
+
+if ((show_statusbar==1&&success_count>0)) && command -v qs >/dev/null 2>&1; then
+  if ! qs ipc call statusbar showFor "$duration_ms" >/dev/null 2>&1; then
+    printf 'Files processed, but the status bar did not accept IPC\n' >&2
+  fi
+fi
+
+if ((failure_count>0)); then
   exit 1
-fi
-
-if ! command -v qs >/dev/null 2>&1; then
-  printf 'drawer: files copied, but qs was not found; the status bar was not revealed\n' >&2
-  exit 0
-fi
-
-if ! qs ipc call statusbar showFor "$duration_ms" >/dev/null 2>&1; then
-  printf 'drawer: files copied, but the running Quickshell instance did not accept IPC\n' >&2
-  exit 0
 fi

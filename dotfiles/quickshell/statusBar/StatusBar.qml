@@ -148,20 +148,20 @@ PanelWindow{
     id:barDropArea
     anchors{left:parent.left;top:parent.top;bottom:parent.bottom}
     width:root.triggerPx
-    enabled:!fileDrawer.printing
+    enabled:!fileDrawer.printing&&!fileDrawer.copying
 
     onEntered:root.revealed=true
     onDropped:function(drop){
-      if(!fileDrawer.printing&&drop.urls&&drop.urls.length>0){
+      if(!fileDrawer.printing&&!fileDrawer.copying&&drop.urls&&drop.urls.length>0){
         drop.accept(Qt.CopyAction);
         fileDrawer.expanded=true;
-        fileDrawer.enqueueDroppedUrls(drop.urls);
+        fileDrawer.sendToDrawer(drop.urls);
       }
     }
 
     Rectangle{
       anchors.fill:parent
-      visible:barDropArea.containsDrag&&!fileDrawer.printing
+      visible:barDropArea.containsDrag&&!fileDrawer.printing&&!fileDrawer.copying
       color:"#401793d1"
       border.width:1
       border.color:"#1793d1"

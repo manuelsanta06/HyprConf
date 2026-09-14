@@ -19,11 +19,11 @@ ExpandableModule{
   property string lastMessage:"Ready to use"
   property int    queuedPrinterJobs:0
 
-  // Copy queue
-  property var copyQueue:[]
-  property var activeCopy:null
-  property int copyFailureCount:0
-  readonly property bool copying:copyProcess.running||copyQueue.length>0
+  property string drawerOutput:""
+  property string drawerError:""
+  readonly property string drawerCommand:
+    Quickshell.env("HOME")+"/resources/scripts/drawer"
+  readonly property bool copying:drawerProcess.running
 
   // Print queue
   property bool   printing:false
@@ -89,10 +89,6 @@ ExpandableModule{
     return decodeURIComponent(rawUrl.substring(7));
   }
 
-  function fileNameFromPath(path){
-    return path.substring(path.lastIndexOf("/")+1);
-  }
-
   function formatFileSize(bytes){
     let size=Number(bytes);
     let units=["B","KiB","MiB","GiB","TiB","PiB"];
@@ -110,48 +106,6 @@ ExpandableModule{
       :Math.round(size)+" "+units[unitIndex];
   }
 
-  function fileNameFromWebUrl(url) {
-    try{
-      let parts=url.split('?')[0].split('/');
-      let name=parts[parts.length-1];
-      return name?decodeURIComponent(name):"downloaded_file";
-    }catch(e){
-      return "downloaded_file";
-    }
-  }
-
-  function nameTaken(name,extraNames){
-    for(let i=0;i<root.files.length;i++){
-      if(root.files[i].name===name)return true;
-    }
-
-    for(let i=0;i<root.copyQueue.length;i++){
-      if(root.copyQueue[i].name===name)return true;
-    }
-
-    for(let i=0;i<extraNames.length;i++){
-      if(extraNames[i]===name)return true;
-    }
-
-    return false;
-  }
-
-  function uniqueName(originalName,extraNames){
-    let dot=originalName.lastIndexOf(".");
-    let hasExtension=dot>0;
-    let stem=hasExtension?originalName.substring(0,dot):originalName;
-    let extension=hasExtension?originalName.substring(dot):"";
-    let candidate=originalName;
-    let suffix=1;
-
-    while(root.nameTaken(candidate,extraNames)){
-      candidate=stem+"("+suffix+")"+extension;
-      suffix++;
-    }
-
-    return candidate;
-  }
-
   function refreshFiles(){
     if(!storageReady||fileScanner.running)return;
     fileScanner.exec([
@@ -161,8 +115,8 @@ ExpandableModule{
     ]);
   }
 
-  function enqueueDroppedUrls(urls){
-    if(root.printing||!urls||urls.length===0)return;
+  function sendToDrawer(urls){
+    if(root.printing||root.copying||!urls||urls.length===0)return;
 
     if(!storageReady){
       root.pendingDropUrls=root.pendingDropUrls.concat(urls);
@@ -170,66 +124,29 @@ ExpandableModule{
       return;
     }
 
-    let queue=root.copyQueue.slice();
-    let names=[];
+    let command=[root.drawerCommand,"--no-show","--"];
+    let accepted=0;
 
     for(let i=0;i<urls.length;i++){
       let rawUrl=typeof urls[i].toString==="function"?urls[i].toString():String(urls[i]);
       let isWeb=rawUrl.startsWith("http://")||rawUrl.startsWith("https://");
-      
-      let sourcePath="";
-      if(!isWeb){
-        sourcePath=root.pathFromUrl(urls[i]);
-        if(sourcePath===""){
-          root.lastMessage="Only local or web files can be copied";
-          continue;
-        }
+      let source=isWeb?rawUrl:root.pathFromUrl(urls[i]);
 
-        if(sourcePath===root.drawerDirectory||sourcePath.indexOf(root.drawerDirectory+"/")===0){
-          continue;
-        }
+      if(source===""){
+        root.lastMessage="Only local files or web URLs can be added";
+        continue;
       }
 
-      let originalName=isWeb?root.fileNameFromWebUrl(rawUrl):root.fileNameFromPath(sourcePath);
-      if(originalName==="")originalName="downloaded_file";
-
-      let destinationName=root.uniqueName(originalName,names);
-      names.push(destinationName);
-      
-      queue.push({
-        source:isWeb?rawUrl:sourcePath,
-        name:destinationName,
-        destination:root.drawerDirectory+"/"+destinationName,
-        isWeb:isWeb
-      });
+      command.push(source);
+      accepted++;
     }
 
-    if(queue.length===root.copyQueue.length)return;
+    if(accepted===0)return;
 
-    if(!root.copying)root.copyFailureCount=0;
-    root.copyQueue=queue;
-    root.startNextCopy();
-  }
-
-  function startNextCopy(){
-    if(copyProcess.running||root.copyQueue.length===0)return;
-
-    root.activeCopy=root.copyQueue[0];
-    
-    if(root.activeCopy.isWeb){
-      root.lastMessage="Downloading file";
-      copyProcess.exec([
-        "curl","-sL",
-        "-o",root.activeCopy.destination,
-        root.activeCopy.source
-      ]);
-    }else{
-      copyProcess.exec([
-        "cp","--",
-        root.activeCopy.source,
-        root.activeCopy.destination
-      ]);
-    }
+    root.drawerOutput="";
+    root.drawerError="";
+    root.lastMessage="Adding files...";
+    drawerProcess.exec(command);
   }
 
   function deleteFile(file){
@@ -451,7 +368,7 @@ ExpandableModule{
       if(root.pendingDropUrls.length>0){
         let pendingUrls=root.pendingDropUrls.slice();
         root.pendingDropUrls=[];
-        root.enqueueDroppedUrls(pendingUrls);
+        root.sendToDrawer(pendingUrls);
       }
     }
   }
@@ -489,33 +406,28 @@ ExpandableModule{
   }
 
   Process{
-    id:copyProcess
+    id:drawerProcess
+
+    stdout:StdioCollector{
+      onStreamFinished:root.drawerOutput=this.text.trim()
+    }
 
     stderr:StdioCollector{
-      onStreamFinished:{
-        root.lastMessage=this.text.trim();
-      }
+      onStreamFinished:root.drawerError=this.text.trim()
     }
 
     onExited:function(exitCode){
-      let copiedFile=root.activeCopy;
-      root.activeCopy=null;
-      root.copyQueue=root.copyQueue.slice(1);
+      let output=root.drawerOutput.replace(/\s+/g," ").trim();
+      let error=root.drawerError.replace(/\s+/g," ").trim();
 
-      if(exitCode!==0){
-        root.copyFailureCount++;
-      }
-
-      if(root.copyQueue.length>0){
-        root.startNextCopy();
-        return;
-      }
-
-      if(root.copyFailureCount>0){
-        root.lastMessage=root.copyFailureCount+" file" +(root.copyFailureCount===1?"":"s")+" couldn't be copied";
-      }else if(copiedFile){
-        root.lastMessage="File"+(root.copyFailureCount===1?"":"s")+" added";
-      }
+      if(exitCode!==0&&error!=="")
+        root.lastMessage=output+" · "+error;
+      else if(output!=="")
+        root.lastMessage=output;
+      else if(error!=="")
+        root.lastMessage=error;
+      else
+        root.lastMessage=exitCode===0?"Files added":"Could not add files";
 
       root.refreshFiles();
     }
@@ -897,8 +809,7 @@ ExpandableModule{
 
         Text{
           Layout.fillWidth:true
-          text:root.printing
-            ?root.lastMessage
+          text:root.printing?root.lastMessage
            :(root.lastMessage+(root.queuedPrinterJobs>=0?" · Queue:"+root.queuedPrinterJobs:""))
           color:root.printing?"#f9e2af":"#6c7086"
           font.pixelSize:9
@@ -1009,19 +920,19 @@ ExpandableModule{
   DropArea{
     id:drawerDropArea
     anchors.fill:parent
-    enabled:!root.printing
+    enabled:!root.printing&&!root.copying
 
     onEntered:root.expanded=true
     onDropped:function(drop){
-      if(!root.printing&&drop.urls&&drop.urls.length>0){
+      if(!root.printing&&!root.copying&&drop.urls&&drop.urls.length>0){
         drop.accept(Qt.CopyAction);
-        root.enqueueDroppedUrls(drop.urls);
+        root.sendToDrawer(drop.urls);
       }
     }
 
     Rectangle{
       anchors.fill:parent
-      visible:drawerDropArea.containsDrag&&!root.printing
+      visible:drawerDropArea.containsDrag&&!root.printing&&!root.copying
       radius:6
       color:"#401793d1"
       border.width:1
