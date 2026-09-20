@@ -1,2 +1,2 @@
 # HyprConf
-my hyprland/arch config
+my hyprland/arch/quickshell config

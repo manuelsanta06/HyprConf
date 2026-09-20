@@ -191,4 +191,5 @@ hl.layer_rule({
   name="statusbar-blur",
   match={namespace="^statusbar$"},
   blur=true,
+  -- xray=true,
 })
