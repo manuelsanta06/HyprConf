@@ -137,7 +137,7 @@ PanelWindow{
       // BOTTOM
       FileDrawer{id:fileDrawer}
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
-      NetworkWidget{}
+      NetworkWidget{active:root.revealed}
       Battery{}
       Clock{textBottom:true}
     }
