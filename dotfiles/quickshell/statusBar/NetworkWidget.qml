@@ -247,7 +247,9 @@ ExpandableModule{
 
       RowLayout{
         Layout.fillWidth:true
+        Layout.minimumHeight:30
         Layout.preferredHeight:30
+        Layout.maximumHeight:30
         visible:netWidget.passwordRequired
 
         Rectangle{
@@ -268,7 +270,8 @@ ExpandableModule{
             echoMode:TextInput.Password
             clip:true
             onTextChanged:netWidget.passwordText=text
-            onVisibleChanged:if(visible){clear();forceActiveFocus()}
+            onVisibleChanged:if(visible)
+              Qt.callLater(function(){clear();forceActiveFocus()})
             Keys.onReturnPressed:netWidget.connectSelected()
           }
         }

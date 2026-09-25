@@ -20,6 +20,7 @@ PanelWindow{
 
   // Layer-shell config
   aboveWindows:true
+  focusable:networkWidget.passwordRequired
   exclusionMode:ExclusionMode.Ignore
   WlrLayershell.namespace:"statusbar"
   HyprlandWindow.visibleMask:Region{
@@ -137,7 +138,7 @@ PanelWindow{
       // BOTTOM
       FileDrawer{id:fileDrawer}
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
-      NetworkWidget{active:root.revealed}
+      NetworkWidget{id:networkWidget;active:root.revealed}
       Battery{}
       Clock{textBottom:true}
     }
