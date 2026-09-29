@@ -131,10 +131,18 @@ ExpandableModule{
     netWidget.passwordRequired=false;
   }
 
+  function clearSelection(){
+    netWidget.selectedNetwork=null;
+    netWidget.passwordText="";
+    netWidget.passwordRequired=false;
+    netWidget.connectionMessage="";
+  }
+
   onActiveChanged:{
     if(netWidget.active&&netWidget.expanded){
       netWidget.refresh();
     }else{
+      netWidget.clearSelection();
       if(netWidget.wifiDevice)
         netWidget.wifiDevice.scannerEnabled=false;
     }
@@ -143,8 +151,10 @@ ExpandableModule{
   onExpandedChanged:{
     if(netWidget.expanded&&netWidget.active){
       netWidget.refresh();
-    }else if(netWidget.wifiDevice){
-      netWidget.wifiDevice.scannerEnabled=false;
+    }else{
+      if(!netWidget.expanded)netWidget.clearSelection();
+      if(netWidget.wifiDevice)
+        netWidget.wifiDevice.scannerEnabled=false;
     }
   }
   onWifiDeviceChanged:if(netWidget.active&&netWidget.expanded)netWidget.refresh()
