@@ -27,3 +27,7 @@ else
 fi
 
 awww img --transition-type outer --transition-pos 0.999,0.999 --transition-step 90 "$WALLPAPER" -o "$FOCUSED_OUTPUT"
+if [[ "$FOCUSED_OUTPUT" == "eDP-1" ]]; then
+  matugen --source-color-index 0 -q image "$WALLPAPER"
+  # matugen --prefer lightness -q image "$WALLPAPER"
+fi
