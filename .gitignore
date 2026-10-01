@@ -1,4 +1,6 @@
 wallpaper/*
 icons/*
+dotfiles/yazi/theme.toml
+dotfiles/kitty/current-theme.conf
 
 env.json

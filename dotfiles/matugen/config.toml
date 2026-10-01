@@ -5,3 +5,7 @@ mode="dark"
 input_path="~/resources/dotfiles/matugen/templates/kitty.conf"
 output_path="~/resources/dotfiles/kitty/current-theme.conf"
 post_hook="killall -SIGUSR1 kitty"
+
+[templates.yazi]
+input_path="~/resources/dotfiles/matugen/templates/yazi.toml"
+output_path="~/resources/dotfiles/yazi/theme.toml"
