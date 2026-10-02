@@ -9,3 +9,11 @@ post_hook="killall -SIGUSR1 kitty"
 [templates.yazi]
 input_path="~/resources/dotfiles/matugen/templates/yazi.toml"
 output_path="~/resources/dotfiles/yazi/theme.toml"
+
+[templates.obsidian]
+input_path="~/resources/dotfiles/matugen/templates/obsidian.css"
+output_path="~/resources/dotfiles/matugen/outputs/obsidianSnippet.css"
+
+[templates.prism]
+input_path="~/resources/dotfiles/matugen/templates/prism.json"
+output_path="~/resources/dotfiles/matugen/outputs/prismTheme.json"
