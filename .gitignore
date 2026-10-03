@@ -1,6 +1,8 @@
 wallpaper/*
 icons/*
-dotfiles/yazi/theme.toml
+dotfiles/matugen/outputs/obsidianSnippet.css
+dotfiles/matugen/outputs/prismTheme.json
 dotfiles/kitty/current-theme.conf
+dotfiles/yazi/theme.toml
 
 env.json
