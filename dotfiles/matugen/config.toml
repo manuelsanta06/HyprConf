@@ -2,18 +2,23 @@
 mode="dark"
 
 [templates.kitty]
-input_path="~/resources/dotfiles/matugen/templates/kitty.conf"
+input_path="./templates/kitty.conf"
 output_path="~/resources/dotfiles/kitty/current-theme.conf"
 post_hook="killall -SIGUSR1 kitty"
 
 [templates.yazi]
-input_path="~/resources/dotfiles/matugen/templates/yazi.toml"
+input_path="./templates/yazi.toml"
 output_path="~/resources/dotfiles/yazi/theme.toml"
 
 [templates.obsidian]
-input_path="~/resources/dotfiles/matugen/templates/obsidian.css"
-output_path="~/resources/dotfiles/matugen/outputs/obsidianSnippet.css"
+input_path="./templates/obsidian.css"
+output_path="./outputs/obsidianSnippet.css"
 
 [templates.prism]
-input_path="~/resources/dotfiles/matugen/templates/prism.json"
-output_path="~/resources/dotfiles/matugen/outputs/prismTheme.json"
+input_path="./templates/prism.json"
+output_path="./outputs/prismTheme.json"
+
+[templates.cava]
+input_path="./templates/cava.ini"
+output_path="~/resources/dotfiles/cava/themes/matugen"
+post_hook = 'pkill -USR1 cava'
