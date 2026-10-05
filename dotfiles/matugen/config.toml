@@ -22,3 +22,8 @@ output_path="./outputs/prismTheme.json"
 input_path="./templates/cava.ini"
 output_path="~/resources/dotfiles/cava/themes/matugen"
 post_hook = 'pkill -USR1 cava'
+
+[templates.quickshell]
+input_path="./templates/quickshell.json"
+output_path="~/resources/dotfiles/quickshell/theme/matugen.json"
+# post_hook = 'pkill -USR1 cava'

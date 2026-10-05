@@ -5,6 +5,7 @@ import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import "../components"
+import ".."
 
 ExpandableModule{
   id:root
@@ -655,7 +656,7 @@ ExpandableModule{
                 :root.sharing?"󰐷"
                 :"󰈙"
             color:root.printing?"#f9e2af"
-                :root.sharing?"#1793d1"
+                :root.sharing?Theme.accent
                 :"#cdd6f4"
             font.pixelSize:16
           }
@@ -686,7 +687,7 @@ ExpandableModule{
                 :"Preparing...")
              :(root.files.length+" file"+
                (root.files.length===1?"":"s"))
-            color:root.printing?"#f9e2af":root.sharing?"#1793d1":"#a6adc8"
+            color:root.printing?"#f9e2af":root.sharing?Theme.accent:"#a6adc8"
             font.pixelSize:10
             elide:Text.ElideRight
           }
@@ -746,7 +747,7 @@ ExpandableModule{
                 radius:5
                 color:fileDragHandler.active?"#401793d1":"#181825"
                 border.width:fileDragHandler.active?1:0
-                border.color:"#1793d1"
+                border.color:Theme.accent
               }
 
               Text{
@@ -877,7 +878,7 @@ ExpandableModule{
             Layout.preferredHeight:34
             radius:17
             color:root.printing?"#6c7086":
-             (root.files.length>0&&!root.copying?"#1793d1":"#313244")
+             (root.files.length>0&&!root.copying?Theme.accent:"#313244")
 
             Text{
               anchors.centerIn:parent
@@ -936,7 +937,7 @@ ExpandableModule{
       radius:6
       color:"#401793d1"
       border.width:1
-      border.color:"#1793d1"
+      border.color:Theme.accent
 
       Text{
         anchors.centerIn:parent

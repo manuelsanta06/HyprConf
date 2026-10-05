@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import Quickshell.Io
 import Quickshell.Networking
 import "../components"
+import ".."
 pragma ComponentBehavior:Bound
 
 ExpandableModule{
@@ -28,7 +29,7 @@ ExpandableModule{
   property int strength:netWidget.activeNetwork&&netWidget.type==="wifi"
     ?Math.round(netWidget.activeNetwork.signalStrength*100)
     :netWidget.activeDevice?100:0
-  property string accent:netWidget.activeDevice?"#1793d1":"#ff0000"
+  property string accent:netWidget.activeDevice?Theme.accent:"#ff0000"
   property var selectedNetwork:null
   property string connectionMessage:""
   property string passwordText:""

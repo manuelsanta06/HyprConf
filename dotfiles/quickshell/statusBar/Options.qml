@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../components"
+import ".."
 
 ExpandableModule{
   id:optionsMenu
@@ -20,7 +21,7 @@ ExpandableModule{
         anchors.centerIn:parent
         text:""
         font.pixelSize:30
-        color:"#1793d1"
+        color:Theme.accent
         scale:optionsMenu.expanded?0.8:1.0
         Behavior on scale{NumberAnimation{duration:200}}
       }

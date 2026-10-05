@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell.Hyprland
 import "../components"
+import ".."
 
 ExpandableModule{
   id:root
@@ -46,7 +47,7 @@ ExpandableModule{
         Layout.preferredWidth:30
         Layout.preferredHeight:30
         radius:8
-        color:"#1793d1"
+        color:Theme.accent
 
         Text{
           anchors.centerIn:parent
@@ -93,7 +94,7 @@ ExpandableModule{
 
         Text{
           text:"ESPACIOS DE TRABAJO"
-          color:"#1793d1"
+          color:Theme.accent
           font.pixelSize:10
           font.bold:true
           font.letterSpacing:1
@@ -128,7 +129,7 @@ ExpandableModule{
             Layout.fillWidth:true
             Layout.preferredHeight:28
             radius:6
-            color:active?"#1793d1":(occupied?"#7F111224":"#50181825")
+            color:active?Theme.accent:(occupied?"#7F111224":"#50181825")
             border.width:workspace&&workspace.urgent?1:0
             border.color:"#f38ba8"
 

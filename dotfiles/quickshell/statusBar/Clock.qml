@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../components"
+import ".."
 
 ExpandableModule{
   id:clockWidget
@@ -60,7 +61,7 @@ ExpandableModule{
       Text{
         Layout.alignment:Qt.AlignHCenter
         text:Qt.formatDate(time.now,"MMMM yyyy").toUpperCase()
-        color:"#1793d1"
+        color:Theme.accent
         font.pixelSize:11
         font.bold:true
         font.letterSpacing:1
@@ -96,7 +97,7 @@ ExpandableModule{
             Layout.preferredHeight:22
             radius:11
             // Reacciona al cambio de día automáticamente
-            color:(index + 1 === time.day) ? "#1793d1" :"transparent"
+            color:(index + 1 === time.day) ? Theme.accent :"transparent"
 
             Text{
               anchors.centerIn:parent

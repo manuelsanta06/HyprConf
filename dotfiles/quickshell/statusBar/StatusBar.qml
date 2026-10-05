@@ -4,6 +4,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Io
+import ".."
 
 PanelWindow{
   id: root
@@ -96,7 +97,7 @@ PanelWindow{
   //Bar panel
   Rectangle{
     id:barBody
-    color:"#c20f0f14"
+    color:Theme.background.alpha(0.7)
 
     x:root.revealed?0:-root.barWidth
     y:0
@@ -165,7 +166,7 @@ PanelWindow{
       visible:barDropArea.containsDrag&&!fileDrawer.printing&&!fileDrawer.copying
       color:"#401793d1"
       border.width:1
-      border.color:"#1793d1"
+      border.color:Theme.accent
     }
   }
 }
