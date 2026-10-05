@@ -3,6 +3,7 @@ import QtQuick.Window
 import Quickshell
 import Quickshell.Io
 import "../components"
+import ".."
 
 PanelWindow{
   id:brightnessOsdWindow
@@ -58,6 +59,6 @@ PanelWindow{
     position:"right"
     percentage:Math.round((brightnessOsdWindow.brightness/brightnessOsdWindow.maxBrightness)*100)
     icon:"󰃠"
-    accentColor:"#f9e2af"
+    accentColor:Theme.accentAlt
   }
 }

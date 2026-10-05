@@ -2,7 +2,8 @@ import QtQuick
 import QtQuick.Window
 import Quickshell
 import Quickshell.Services.Pipewire
-import "../components"
+import "../components/"
+import ".."
 
 PanelWindow {
   id: volumeOsdWindow
@@ -33,6 +34,6 @@ PanelWindow {
     position:"right"
     percentage:Math.round((isNaN(volumeOsdWindow.vol)?0:volumeOsdWindow.vol)*100)
     icon:volumeOsdWindow.isMuted?"󰝟":volumeOsdWindow.vol>0.5?"":""
-    accentColor:volumeOsdWindow.isMuted?"#6c7086":(isNaN(volumeOsdWindow.vol)?0:volumeOsdWindow.vol)>1?"#ff0000":"#a6e3a1"
+    accentColor:volumeOsdWindow.isMuted?"#6c7086":(isNaN(volumeOsdWindow.vol)?0:volumeOsdWindow.vol)>1?"#ff0000":Theme.accent
   }
 }

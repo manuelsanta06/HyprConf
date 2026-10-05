@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Io
+import ".."
 
 SliderWidget{
   id: root
@@ -11,9 +12,9 @@ SliderWidget{
 
   level: root.maxBrightness>0?root.brightness/root.maxBrightness:0
   icon: "󰃠"
-  progressColor: "#1793d1"
-  iconColor: root.level>0.15?"#0f0f14":"#e8e8f0"
-  valueColor: root.level>0.85?"#0f0f14":"#cdd6f4"
+  progressColor:Theme.accentAlt
+  iconColor: root.level>0.15?"#0f0f14":Theme.accentAlt
+  valueColor: root.level>0.85?"#0f0f14":Theme.accentAlt
   leftMargin: 16
   rightMargin: 16
   cornerRadius: 6

@@ -53,7 +53,7 @@ hl.config({
       size=10,
       passes=1,
 
-      special=true,
+      special=false,
 
       -- varian="glass"
     },

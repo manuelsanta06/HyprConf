@@ -1,10 +1,10 @@
 import QtQuick
-import QtQuick.Layouts
+import ".."
 
 Item{
   id: root
   property real percentage: 0
-  property color accentColor: "#89b4fa"
+  property color accentColor:Theme.accent
   property string icon: " "
   property string position: "right"
   property bool isVertical: position === "left" || position === "right"
@@ -43,7 +43,7 @@ Item{
     id:contentPanel
     width:parent.width
     height:parent.height
-    color:"#1e1e2e" 
+    color:Theme.background
 
     topLeftRadius:(root.position==="right"||root.position==="bottom")?16:0
     topRightRadius:(root.position==="left"||root.position==="bottom")?16:0

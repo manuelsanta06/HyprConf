@@ -646,8 +646,8 @@ ExpandableModule{
           Layout.preferredWidth:30
           Layout.preferredHeight:30
           radius:8
-          color:root.printing?"#33f9e2af"
-              :root.sharing?"#331793d1"
+          color:root.printing?Theme.accentAlt.alpha(0.2)
+              :root.sharing?Theme.accent.alpha(0.2)
               :"#1affffff"
 
           Text{
@@ -655,7 +655,7 @@ ExpandableModule{
             text:root.printing?""
                 :root.sharing?"󰐷"
                 :"󰈙"
-            color:root.printing?"#f9e2af"
+            color:root.printing?Theme.accentAlt
                 :root.sharing?Theme.accent
                 :"#cdd6f4"
             font.pixelSize:16

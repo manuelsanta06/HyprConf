@@ -233,7 +233,7 @@ ExpandableModule{
           Layout.preferredWidth:30
           Layout.preferredHeight:28
           radius:4
-          color:hover.hovered?"#331793d1":"transparent"
+          color:hover.hovered?Theme.accent.alpha(0.2):"transparent"
 
           Text{
             anchors.centerIn:parent
@@ -291,7 +291,7 @@ ExpandableModule{
           Layout.preferredWidth:58
           Layout.fillHeight:true
           radius:4
-          color:"#331793d1"
+          color:Theme.accent.alpha(0.2)
 
           Text{
             anchors.centerIn:parent
@@ -317,7 +317,7 @@ ExpandableModule{
           width:networkList.width
           height:32
           radius:4
-          color:modelData.connected?"#331793d1":"#12181825"
+          color:modelData.connected?Theme.accent.alpha(0.2):"#12181825"
 
           RowLayout{
             anchors.fill:parent

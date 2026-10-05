@@ -2,6 +2,7 @@ wallpaper/*
 icons/*
 dotfiles/matugen/outputs/obsidianSnippet.css
 dotfiles/matugen/outputs/prismTheme.json
+dotfiles/quickshell/theme/matugen.json
 dotfiles/kitty/current-theme.conf
 dotfiles/cava/themes/solarized_dark
 dotfiles/cava/themes/tricolor

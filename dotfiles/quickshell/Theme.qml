@@ -10,7 +10,8 @@ Singleton{
   property color background:"#000000"
   property color foreground:"#ffffff"
   property color accent:    "#ffffff"
-  property color accentAlt:"#ffffff"
+  property color accentFor: "#ffffff"
+  property color accentAlt: "#ffffff"
 
   FileView{
     id:colorsFile
@@ -28,6 +29,7 @@ Singleton{
         root.background = colors.background
         root.foreground = colors.foreground
         root.accent     = colors.accent
+        root.accentFor  = colors.accent_foreground
         root.accentAlt  = colors.accent_alt
 
       }catch(error){

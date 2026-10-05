@@ -1,5 +1,7 @@
 import QtQuick
 import Quickshell.Io
+import "../modules"
+import ".."
 
 SliderWidget{
   id: root
@@ -9,10 +11,10 @@ SliderWidget{
 
   level:Math.max(0,Math.min(1,root.vol))
   icon:root.isMuted?"󰝟":(root.vol>0.5?"":"")
-  progressColor:root.isMuted?"#6c7086":"#89b4fa"
-  iconColor: root.level > 0.15?"#0f0f14":"#89b4fa"
+  progressColor:root.isMuted?"#6c7086":Theme.accent
+  iconColor: root.level > 0.15?"#0f0f14":Theme.accent
   valueText: Math.round(root.vol*100)+"%"
-  valueColor: root.level>0.85?"#0f0f14":"#cdd6f4"
+  valueColor: root.level>0.85?"#0f0f14":Theme.accent
   secondaryActionEnabled:true
 
   function updateInfo(){

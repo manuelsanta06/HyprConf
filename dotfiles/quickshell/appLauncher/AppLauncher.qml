@@ -7,6 +7,7 @@ import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Widgets
 import "../components"
+import ".."
 
 
 ShellRoot{
@@ -167,7 +168,7 @@ ShellRoot{
       id:launcher
       position:"top"
       keepOpen:true
-      backgroundColor:"#1b1b29"
+      backgroundColor:Theme.background
       width:520
       height:85+Math.min(resultsList.count*55,500)
 
@@ -193,7 +194,7 @@ ShellRoot{
           rightPadding:18
 
           color:"white"
-          selectionColor:"#89b4fa"
+          selectionColor:Theme.accent
           selectedTextColor:"#1e1e2e"
           font.pixelSize:24
           verticalAlignment:TextInput.AlignVCenter
@@ -253,9 +254,10 @@ ShellRoot{
           model:[]
           
           highlightMoveDuration:150
-          highlight:Rectangle{color:"#1793D1";radius:8}
+          highlight:Rectangle{color:Theme.accent;radius:8}
 
           delegate:ItemDelegate{
+            id:appDelegate
             width:resultsList.width
             height:50
             
@@ -283,7 +285,7 @@ ShellRoot{
 
               Text{
                 text:appName
-                color:"white"
+                color:appDelegate.ListView.isCurrentItem?Theme.accentFor:Theme.foreground
                 font.pixelSize:18
                 Layout.fillWidth:true
                 Layout.alignment:Qt.AlignVCenter
