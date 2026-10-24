@@ -18,6 +18,8 @@ hl.on("hyprland.start",function()
   hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
   hl.exec_cmd("systemctl --user start hyprland-session.target")
 
+  hl.exec_cmd("/usr/lib/pentablet/PenTablet.sh /mini")
+
   -- Banana cursor
   hl.exec_cmd("hyprctl setcursor Banana 48")
 end)
@@ -109,12 +111,12 @@ hl.config({
     kb_options = "caps:hyper",
     kb_rules   = "",
 
-    follow_mouse = 1,
+    follow_mouse=1,
 
-    accel_profile = "flat",
+    accel_profile="flat",
 
-    touchpad = {
-      natural_scroll = false,
+    touchpad={
+      natural_scroll=false,
     },
   },
 })

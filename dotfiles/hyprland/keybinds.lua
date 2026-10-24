@@ -12,6 +12,7 @@ hl.bind("SHIFT + XF86Launch2", hl.dsp.exec_cmd("wtype Ñ"))
 
 -- Scripts and Apps
 hl.bind(mainMod.." + SHIFT + S", hl.dsp.exec_cmd("screenshot.sh"))
+hl.bind("Print", hl.dsp.exec_cmd("screenshot.sh"))
 hl.bind(mainMod.." + F2", hl.dsp.exec_cmd("rWallpaper.sh"))
 
 hl.bind(mainMod.." + E", hl.dsp.exec_cmd(fileManager))

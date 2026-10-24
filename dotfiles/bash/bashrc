@@ -2,6 +2,7 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
+source $HOME/resources/dotfiles/bash/bashComplete.sh
 source $HOME/resources/dotfiles/bash/lessConf.sh
 source $HOME/resources/dotfiles/bash/aliases.sh
 
