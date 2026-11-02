@@ -1,4 +1,4 @@
-complete -cf man sudo pls
+complete -cf man sudo pls nvrun
 
 _rwallpaper_complete(){
   local dir="$HOME/resources/wallpapers"
