@@ -1,10 +1,19 @@
--- PROGRAMS
-local terminal    ="kitty"
-local fileManager =terminal .. ' yazi "$(cat /tmp/scdf)"'
+local config={
+  mainMod     = "SUPER",
+  terminal    = "kitty",
+}
+config.fileManager=config.terminal .. ' yazi "$(scd-path)"'
+
+
+-- External files
+require("displays")(config)
+require("keybinds")(config)
+require("workspaceGroups")(config)
+
 
 -- AUTOSTART
 hl.on("hyprland.start",function()
-  hl.exec_cmd(terminal)
+  hl.exec_cmd(config.terminal)
   hl.exec_cmd("[workspace special:browser silent] /opt/zen-browser/zen")
 
   hl.exec_cmd("awww-daemon")
@@ -24,9 +33,6 @@ hl.on("hyprland.start",function()
   hl.exec_cmd("hyprctl setcursor Banana 48")
 end)
 
--- External files
-require("displays")
-require("keybinds")
 
 -- LOOK AND FEEL
 hl.config({
@@ -127,12 +133,6 @@ hl.device({
     accel_profile = "adaptive",
 })
 
-hl.gesture({
-    fingers=3,
-    direction="horizontal",
-    action="workspace"
-})
-
 -- WINDOWS AND WORKSPACES
 
 hl.workspace_rule({workspace="w[tv1]",gaps_out=0,gaps_in=0})
@@ -172,8 +172,8 @@ hl.window_rule({
 })
 
 hl.window_rule({
-    name        = "kitty-monitor",
-    match       = {class="kitty-monitor"},
+    name        = "terminal-monitor",
+    match       = {class="terminal-monitor"},
     float       = true,
     pin         = true,
     move        = "0 0",

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if (( $#>1 )); then
+  printf 'Usage: scd-path [directory]\n' >&2
+  exit 2
+fi
+
+group=0
+if [[ -n ${XDG_RUNTIME_DIR:-} && -r $XDG_RUNTIME_DIR/workspace-group ]]; then
+  IFS= read -r group < "$XDG_RUNTIME_DIR/workspace-group"
+fi
+[[ $group == [0-9] ]] || group=0
+
+stateDir="${XDG_STATE_HOME:-$HOME/.local/state}/scd/groups"
+stateFile="$stateDir/$group"
+
+if (( $#==1 )); then
+  directory=$(realpath -e -- "$1") || exit
+  if [[ ! -d $directory ]]; then
+    printf 'scd-path: not a directory: %s\n' "$directory" >&2
+    exit 1
+  fi
+  mkdir -p -- "$stateDir" || exit
+  tempFile=$(mktemp "$stateDir/.$group.XXXXXX") || exit
+  trap 'rm -f -- "$tempFile"' EXIT
+  printf '%s\n' "$directory" > "$tempFile" || exit
+  mv -f -- "$tempFile" "$stateFile" || exit
+elif [[ -r $stateFile ]]; then
+  directory=$(<"$stateFile")
+else
+  directory=$HOME
+fi
+
+[[ -d $directory ]] || directory=$HOME
+printf '%s\n' "$directory"

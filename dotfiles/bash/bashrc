@@ -14,8 +14,9 @@ export EDITOR='nvim'
 
 
 scd(){
-  [[ -n "$1" ]] && realpath "$1" > /tmp/scdf
-  cd "$(cat /tmp/scdf)"
+  local directory
+  directory=$(scd-path "$@") || return
+  cd -- "$directory"
 }
 bind '"\ew":"scd ./\n"'
 
