@@ -1,6 +1,8 @@
 local config={
   mainMod     = "SUPER",
   terminal    = "kitty",
+  workspaceAnimation={leaf="workspaces",enabled=true,speed=6,bezier="default",style="slide"},
+  groupAnimation={leaf="workspaces",enabled=true,speed=6,bezier="default",style="slidevert"},
 }
 config.fileManager=config.terminal .. ' yazi "$(scd-path)"'
 
@@ -87,7 +89,9 @@ hl.animation({leaf = "windowsOut", enabled = true,  speed = 2, bezier = "niercur
 -- hl.animation({leaf = "borderangle", speed = 8,  bezier = "default" })
 -- hl.animation({leaf = "fade",       enabled = true,  speed = 5,  bezier = "default" })
 
-hl.animation({leaf = "workspaces", enabled = true,  speed = 6,  bezier = "default" })
+hl.animation(config.workspaceAnimation)
+hl.animation({leaf="specialWorkspace",enabled=config.workspaceAnimation.enabled,
+  speed=config.workspaceAnimation.speed,bezier=config.workspaceAnimation.bezier,style=config.workspaceAnimation.style})
 
 
 hl.config({

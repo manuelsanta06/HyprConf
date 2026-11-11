@@ -65,6 +65,7 @@ return function(config)
       end
     end
 
+    hl.animation(config.groupAnimation)
     group=newGroup
     for _,monitor in ipairs(monitors) do
       local id=targets[monitor.name]
@@ -116,10 +117,12 @@ return function(config)
     end)
 
     hl.bind(mainMod.." + "..key,function()
+      hl.animation(config.workspaceAnimation)
       hl.dispatch(hl.dsp.focus({workspace=group*10+i,}))
     end)
 
     hl.bind(mainMod.." + SHIFT + "..key,function()
+      hl.animation(config.workspaceAnimation)
       hl.dispatch(hl.dsp.window.move({workspace=group*10+i,}))
     end)
   end
