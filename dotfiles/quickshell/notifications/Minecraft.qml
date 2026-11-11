@@ -114,9 +114,17 @@ PanelWindow{
         }
 
         Timer{
+          id:expiryTimer
           interval:toast.modelData.expireTimeout>0?toast.modelData.expireTimeout*1000:5000
           running:true
           onTriggered:root.removeNotification(toast.modelData,true)
+        }
+
+        Connections{
+          target:toast.modelData
+          function onSummaryChanged(){expiryTimer.restart()}
+          function onBodyChanged(){expiryTimer.restart()}
+          function onHintsChanged(){expiryTimer.restart()}
         }
 
         Rectangle{

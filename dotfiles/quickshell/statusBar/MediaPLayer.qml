@@ -9,6 +9,8 @@ ExpandableModule{
   id:mediaModule
   property var player: getBestPlayer(Mpris.players.values)
   property bool notificationEnabled:true
+  property string trackNotificationId:""
+  property var queuedNotificationCommand:null
   property string lastTrackKey:""
   property bool trackBaselineReady:false
   property string pendingNotificationKey:""
@@ -67,10 +69,21 @@ ExpandableModule{
   }
 
   function sendTrackNotification(title,body,icon){
-    let command=["notify-send","-a","Media Player"];
+    let command=["notify-send","-p","-a","Media Player"];
     if(icon!=="")command.push("-i",icon);
-    command.push(title,body);
-    Quickshell.execDetached(command);
+    command.push("--",title,body);
+    mediaModule.queuedNotificationCommand=command;
+    mediaModule.flushTrackNotification();
+  }
+
+  function flushTrackNotification(){
+    if(trackNotifier.running||!mediaModule.queuedNotificationCommand)return;
+    let command=mediaModule.queuedNotificationCommand;
+    mediaModule.queuedNotificationCommand=null;
+    if(mediaModule.trackNotificationId!=="")
+      command.splice(1,0,"-r",mediaModule.trackNotificationId,
+        "-h","string:x-media-track-update:"+Date.now());
+    trackNotifier.exec(command);
   }
 
   function prepareTrackNotification(){
@@ -152,6 +165,17 @@ ExpandableModule{
   property int cavaBars:30
   property real cavaGain: 1.8
   property var audioLevels:Array(cavaBars).fill(0)
+
+  Process{
+    id:trackNotifier
+    stdout:StdioCollector{id:notificationOutput}
+    onExited:(exitCode)=>{
+      let id=notificationOutput.text.trim();
+      if(exitCode===0&&/^[1-9][0-9]*$/.test(id))
+        mediaModule.trackNotificationId=id;
+      mediaModule.flushTrackNotification();
+    }
+  }
 
   Process{
     id:artworkDownloader

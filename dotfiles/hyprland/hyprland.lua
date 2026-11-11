@@ -63,7 +63,7 @@ hl.config({
 
       special=false,
 
-      -- varian="glass"
+      variant="kawase",
     },
     shadow={
       enabled=true,
