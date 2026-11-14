@@ -11,7 +11,7 @@ config.fileManager=config.terminal .. ' yazi "$(scd-path)"'
 require("displays")(config)
 require("keybinds")(config)
 require("animations")(config)
-require("workspaceGroups")(config)
+_G.workspaceGroups=require("workspaceGroups")(config)
 
 
 -- AUTOSTART

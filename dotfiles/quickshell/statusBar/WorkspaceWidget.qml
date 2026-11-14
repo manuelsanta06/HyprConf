@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
 import "../components"
 import ".."
@@ -8,11 +10,12 @@ ExpandableModule{
   id:root
 
   property int workspaceCount:10
+  property int currentGroup:0
   property var currentWorkspace:Hyprland.focusedWorkspace
   property var focusedWindow:Hyprland.activeToplevel
 
   collapsedHeight:48
-  expandedHeight:108
+  expandedHeight:130
   clickeable:true
   backgroundColor:"#1affffff"
 
@@ -25,8 +28,33 @@ ExpandableModule{
     return null
   }
 
-  function switchTo(number){
-    Hyprland.dispatch("hl.dsp.focus({workspace="+number+"})")
+  function switchTo(position){
+    Hyprland.dispatch("function() workspaceGroups.changeWorkspace("+position+",false) end")
+  }
+
+  function switchGroup(number){
+    Hyprland.dispatch("function() workspaceGroups.changeGroup("+number+",false) end")
+  }
+
+  function workspacesForGroup(number){
+    const first=number*root.workspaceCount+1
+    return Hyprland.workspaces.values.filter(workspace=>
+      workspace.id>=first&&workspace.id<first+root.workspaceCount)
+  }
+
+  FileView{
+    id:groupFile
+    path:Quickshell.env("XDG_RUNTIME_DIR")+"/workspace-group"
+    watchChanges:true
+    printErrors:false
+    onFileChanged:reload()
+    onLoaded:updateGroup()
+    onTextChanged:updateGroup()
+
+    function updateGroup(){
+      const value=text().trim()
+      if(/^[0-9]$/.test(value))root.currentGroup=Number(value)
+    }
   }
 
   function workspaceLabel(workspace){
@@ -44,7 +72,7 @@ ExpandableModule{
       spacing:10
 
       Rectangle{
-        Layout.preferredWidth:30
+        Layout.preferredWidth:36
         Layout.preferredHeight:30
         radius:8
         color:Theme.accent
@@ -93,7 +121,7 @@ ExpandableModule{
         Layout.fillWidth:true
 
         Text{
-          text:"ESPACIOS DE TRABAJO"
+          text:"GRUPO "+root.currentGroup
           color:Theme.accent
           font.pixelSize:10
           font.bold:true
@@ -110,6 +138,41 @@ ExpandableModule{
         }
       }
 
+      RowLayout{
+        Layout.fillWidth:true
+        spacing:2
+
+        Repeater{
+          model:10
+
+          Rectangle{
+            required property int index
+            readonly property bool active:index===root.currentGroup
+            readonly property var workspaces:root.workspacesForGroup(index)
+            readonly property bool occupied:workspaces.some(workspace=>workspace.toplevels.values.length>0)
+            readonly property bool urgent:workspaces.some(workspace=>workspace.urgent)
+
+            Layout.fillWidth:true
+            Layout.preferredHeight:22
+            radius:4
+            color:active?Theme.accent:(occupied?"#7F111224":"#50181825")
+            border.width:urgent?1:0
+            border.color:"#f38ba8"
+
+            Text{
+              anchors.centerIn:parent
+              text:parent.index
+              color:parent.active?Theme.accentFor:(parent.occupied?"#cdd6f4":"#6c7086")
+              font.pixelSize:11
+              font.bold:parent.active
+            }
+
+            HoverHandler{cursorShape:Qt.PointingHandCursor}
+            TapHandler{onTapped:root.switchGroup(parent.index)}
+          }
+        }
+      }
+
       GridLayout{
         Layout.fillWidth:true
         columns:5
@@ -121,7 +184,7 @@ ExpandableModule{
 
           Rectangle{
             required property int index
-            readonly property int workspaceNumber:index+1
+            readonly property int workspaceNumber:root.currentGroup*root.workspaceCount+index+1
             readonly property var workspace:root.workspaceFor(workspaceNumber)
             readonly property bool active:workspace&&workspace.focused
             readonly property bool occupied:workspace&&workspace.toplevels.values.length>0
@@ -136,13 +199,13 @@ ExpandableModule{
             Text{
               anchors.centerIn:parent
               text:parent.workspaceNumber
-              color:parent.active?"#11111b":(parent.occupied?"#cdd6f4":"#6c7086")
+              color:parent.active?Theme.accentFor:(parent.occupied?"#cdd6f4":"#6c7086")
               font.pixelSize:12
               font.bold:parent.active
             }
 
-            HoverHandler{id:workspaceHover}
-            TapHandler{onTapped:root.switchTo(parent.workspaceNumber)}
+            HoverHandler{id:workspaceHover;cursorShape:Qt.PointingHandCursor}
+            TapHandler{onTapped:root.switchTo(parent.index+1)}
 
             scale:workspaceHover.hovered?1.06:1
             Behavior on scale{NumberAnimation{duration:120}}

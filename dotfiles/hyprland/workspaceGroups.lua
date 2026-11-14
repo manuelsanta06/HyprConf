@@ -81,6 +81,16 @@ return function(config)
     publishGroup()
   end
 
+  local function changeWorkspace(position,carryWindow)
+    hl.animation(config.workspaceAnimation)
+    local workspace=group*10+position
+    if carryWindow then
+      hl.dispatch(hl.dsp.window.move({workspace=workspace}))
+    else
+      hl.dispatch(hl.dsp.focus({workspace=workspace}))
+    end
+  end
+
   rememberMonitors(hl.get_monitors())
   publishGroup()
 
@@ -117,14 +127,13 @@ return function(config)
     end)
 
     hl.bind(mainMod.." + "..key,function()
-      hl.animation(config.workspaceAnimation)
-      hl.dispatch(hl.dsp.focus({workspace=group*10+i,}))
+      changeWorkspace(i,false)
     end)
 
     hl.bind(mainMod.." + SHIFT + "..key,function()
-      hl.animation(config.workspaceAnimation)
-      hl.dispatch(hl.dsp.window.move({workspace=group*10+i,}))
+      changeWorkspace(i,true)
     end)
   end
 
+  return{changeGroup=changeGroup,changeWorkspace=changeWorkspace}
 end
