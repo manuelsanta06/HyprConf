@@ -10,6 +10,7 @@ ExpandableModule{
   id:root
 
   property int workspaceCount:10
+  property bool active:true
   property int currentGroup:0
   property var currentWorkspace:Hyprland.focusedWorkspace
   property var focusedWindow:Hyprland.activeToplevel
@@ -90,13 +91,13 @@ ExpandableModule{
         Layout.fillWidth:true
         spacing:1
 
-        Text{
+        MarqueeText{
           Layout.fillWidth:true
+          active:root.active
           text:root.focusedWindow?root.focusedWindow.title:"Sin ventana enfocada"
           color:"#cdd6f4"
           font.pixelSize:12
           font.bold:true
-          elide:Text.ElideRight
         }
 
         Text{

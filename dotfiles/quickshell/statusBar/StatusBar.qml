@@ -128,7 +128,7 @@ PanelWindow{
       Options{active:root.revealed}
 
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff"}
-      WorkspaceWidget{}
+      WorkspaceWidget{active:root.revealed}
       GithubStreak{textBottom:false}
       MediaPLayer{notificationEnabled:modelData===Quickshell.screens[0]}
 
