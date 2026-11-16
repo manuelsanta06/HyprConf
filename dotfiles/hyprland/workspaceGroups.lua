@@ -91,6 +91,13 @@ return function(config)
     end
   end
 
+  local function swapWorkspaces()
+    local monitors=hl.get_monitors()
+    if #monitors~=2 then return end
+    hl.dispatch(hl.dsp.workspace.swap_monitors({monitor1=monitors[1],monitor2=monitors[2]}))
+    rememberMonitors(monitors)
+  end
+
   rememberMonitors(hl.get_monitors())
   publishGroup()
 
@@ -105,8 +112,8 @@ return function(config)
   hl.bind(mainMod.." + grave", hl.dsp.workspace.toggle_special("games"))
   hl.bind(mainMod.." + SHIFT + grave",hl.dsp.window.move({workspace="special:games"}))
 
-  --
   -- workspaces and groups
+  hl.bind(mainMod.." + ALT + S",swapWorkspaces)
   hl.bind(mainMod.." + ALT + Q",function()
     changeGroup(0,false)
   end)
@@ -135,5 +142,5 @@ return function(config)
     end)
   end
 
-  return{changeGroup=changeGroup,changeWorkspace=changeWorkspace}
+  return{changeGroup=changeGroup,changeWorkspace=changeWorkspace,swapWorkspaces=swapWorkspaces}
 end
