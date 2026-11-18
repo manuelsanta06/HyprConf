@@ -94,8 +94,35 @@ return function(config)
   local function swapWorkspaces()
     local monitors=hl.get_monitors()
     if #monitors~=2 then return end
-    hl.dispatch(hl.dsp.workspace.swap_monitors({monitor1=monitors[1],monitor2=monitors[2]}))
+    local first,second=monitors[1],monitors[2]
+    local firstWorkspace,secondWorkspace=first.active_workspace,second.active_workspace
+    if not firstWorkspace or not secondWorkspace then return end
+    local focused=hl.get_active_monitor()
+    local firstSpecial,secondSpecial=first.active_special_workspace,second.active_special_workspace
     rememberMonitors(monitors)
+
+    -- Capture destinations before moving anything, so no workspace moves twice.
+    local moves={}
+    for _,workspace in ipairs(hl.get_workspaces()) do
+      if workspace~=firstWorkspace and workspace~=secondWorkspace then
+        local target=workspace.monitor==first and second or workspace.monitor==second and first
+        if target then moves[#moves+1]={workspace=workspace,monitor=target} end
+      end
+    end
+
+    if firstSpecial then first:set_special_workspace(nil) end
+    if secondSpecial then second:set_special_workspace(nil) end
+    hl.dispatch(hl.dsp.workspace.swap_monitors({monitor1=first,monitor2=second}))
+    for _,move in ipairs(moves) do
+      hl.dispatch(hl.dsp.workspace.move(move))
+    end
+    if secondSpecial then first:set_special_workspace(secondSpecial) end
+    if firstSpecial then second:set_special_workspace(firstSpecial) end
+
+    for _,targets in pairs(memory) do
+      targets[first.name],targets[second.name]=targets[second.name],targets[first.name]
+    end
+    if focused then hl.dispatch(hl.dsp.focus({monitor=focused})) end
   end
 
   rememberMonitors(hl.get_monitors())
