@@ -1,5 +1,25 @@
 #!/bin/bash
 
+stateDir="${XDG_STATE_HOME:-$HOME/.local/state}/scd/groups"
+
+if [[ ${1:-} == --swap ]]; then
+  if (( $#!=3 )) || [[ $2 != [0-9] || $3 != [0-9] ]]; then
+    printf 'Usage: scd-path --swap group group\n' >&2
+    exit 2
+  fi
+  [[ $2 == "$3" ]] && exit 0
+  firstFile="$stateDir/$2"
+  secondFile="$stateDir/$3"
+  if [[ ! -e $firstFile ]]; then
+    [[ ! -e $secondFile ]] || mv -T -- "$secondFile" "$firstFile" || exit
+  elif [[ ! -e $secondFile ]]; then
+    mv -T -- "$firstFile" "$secondFile" || exit
+  else
+    mv -T --exchange -- "$firstFile" "$secondFile" || exit
+  fi
+  exit 0
+fi
+
 if (( $#>1 )); then
   printf 'Usage: scd-path [directory]\n' >&2
   exit 2
@@ -11,7 +31,6 @@ if [[ -n ${XDG_RUNTIME_DIR:-} && -r $XDG_RUNTIME_DIR/workspace-group ]]; then
 fi
 [[ $group == [0-9] ]] || group=0
 
-stateDir="${XDG_STATE_HOME:-$HOME/.local/state}/scd/groups"
 stateFile="$stateDir/$group"
 
 if (( $#==1 )); then

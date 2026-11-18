@@ -91,6 +91,67 @@ return function(config)
     end
   end
 
+  local function swapDirectories(first,second)
+    local pipe=assert(io.popen("scd-path --swap "..first.." "..second.." 2>&1; printf '\\n%d' $?","r"))
+    local output=assert(pipe:read("*a"))
+    pipe:close() -- Hyprland may reap the child before Lua can collect its exit status.
+    local message,status=output:match("^(.*)\n(%d+)$")
+    assert(status=="0","Could not swap group directories: "..(message or output))
+  end
+
+  local function swapGroups(newGroup)
+    if newGroup==group then return end
+    assert(type(newGroup)=="number" and newGroup%1==0 and newGroup>=0 and newGroup<=9,"Invalid group")
+    rememberMonitors(hl.get_monitors())
+
+    local workspaces=hl.get_workspaces()
+    local used,moves={},{}
+    for _,workspace in ipairs(workspaces) do
+      if workspace.id then used[workspace.id]=true end
+    end
+    local temporary=101
+    for _,workspace in ipairs(workspaces) do
+      local id=workspace.id
+      if id and id>=1 and id<=100 then
+        local g=math.floor((id-1)/10)
+        if g==group or g==newGroup then
+          while used[temporary] do temporary=temporary+1 end
+          local destination=g==group and newGroup or group
+          moves[#moves+1]={workspace=workspace,id=id,target=destination*10+(id-1)%10+1,temporary=temporary}
+          used[temporary]=true
+        end
+      end
+    end
+
+    -- Keep scd's storage details in scd-path; abort before changing IDs if it fails.
+    swapDirectories(group,newGroup)
+    local function changeID(move,id)
+      if move.workspace.id==id then return end
+      local result=hl.dispatch(hl.dsp.workspace.change_id({workspace=move.workspace,id=id}))
+      assert(result.ok,"Could not change workspace ID")
+    end
+    local ok,err=pcall(function()
+      -- Vacate both ranges first, including existing empty workspaces.
+      for _,move in ipairs(moves) do changeID(move,move.temporary) end
+      for _,move in ipairs(moves) do changeID(move,move.target) end
+    end)
+    if not ok then
+      for _,move in ipairs(moves) do changeID(move,move.temporary) end
+      for _,move in ipairs(moves) do changeID(move,move.id) end
+      swapDirectories(group,newGroup)
+      error(err)
+    end
+
+    memory[group],memory[newGroup]=memory[newGroup],memory[group]
+    for _,g in ipairs({group,newGroup}) do
+      for name,id in pairs(memory[g] or {}) do
+        memory[g][name]=g*10+(id-1)%10+1
+      end
+    end
+    group=newGroup
+    publishGroup()
+  end
+
   local function swapWorkspaces()
     local monitors=hl.get_monitors()
     if #monitors~=2 then return end
@@ -141,6 +202,16 @@ return function(config)
 
   -- workspaces and groups
   hl.bind(mainMod.." + ALT + S",swapWorkspaces)
+  hl.bind(mainMod.." + ALT + R",hl.dsp.submap("swap-group"))
+  hl.define_submap("swap-group",function()
+    hl.bind("Escape",hl.dsp.submap("reset"),{ignore_mods=true})
+    for digit=0,9 do
+      hl.bind(tostring(digit),function()
+        hl.dispatch(hl.dsp.submap("reset"))
+        swapGroups(digit)
+      end,{ignore_mods=true})
+    end
+  end)
   hl.bind(mainMod.." + ALT + Q",function()
     changeGroup(0,false)
   end)
@@ -169,5 +240,5 @@ return function(config)
     end)
   end
 
-  return{changeGroup=changeGroup,changeWorkspace=changeWorkspace,swapWorkspaces=swapWorkspaces}
+  return{changeGroup=changeGroup,changeWorkspace=changeWorkspace,swapGroups=swapGroups,swapWorkspaces=swapWorkspaces}
 end

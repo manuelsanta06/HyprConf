@@ -12,8 +12,10 @@ ExpandableModule{
   property int workspaceCount:10
   property bool active:true
   property int currentGroup:0
-  property var currentWorkspace:Hyprland.focusedWorkspace
+  property var currentWorkspace:workspaceState.currentWorkspace
   property var focusedWindow:Hyprland.activeToplevel
+
+  WorkspaceState{id:workspaceState}
 
   collapsedHeight:48
   expandedHeight:130
@@ -21,7 +23,7 @@ ExpandableModule{
   backgroundColor:"#1affffff"
 
   function workspaceFor(number){
-    const workspaces=Hyprland.workspaces.values
+    const workspaces=workspaceState.workspaces
     for(let i=0;i<workspaces.length;i++){
       if(workspaces[i].id===number)
         return workspaces[i]
@@ -39,7 +41,7 @@ ExpandableModule{
 
   function workspacesForGroup(number){
     const first=number*root.workspaceCount+1
-    return Hyprland.workspaces.values.filter(workspace=>
+    return workspaceState.workspaces.filter(workspace=>
       workspace.id>=first&&workspace.id<first+root.workspaceCount)
   }
 
@@ -60,9 +62,9 @@ ExpandableModule{
 
   function workspaceLabel(workspace){
     if(!workspace)return "Vacío"
-    if(workspace.hasFullscreen)return "Pantalla completa"
-    return workspace.toplevels.values.length+" ventana"+
-      (workspace.toplevels.values.length===1?"":"s")
+    if(workspace.hasfullscreen)return "Pantalla completa"
+    return workspace.windows+" ventana"+
+      (workspace.windows===1?"":"s")
   }
 
   collapsedContent:Component{
@@ -80,7 +82,7 @@ ExpandableModule{
 
         Text{
           anchors.centerIn:parent
-          text:root.currentWorkspace?root.currentWorkspace.id:"–"
+          text:root.currentWorkspace?(root.currentWorkspace.id??root.currentWorkspace.address):"–"
           color:"#11111b"
           font.pixelSize:16
           font.bold:true
@@ -133,7 +135,7 @@ ExpandableModule{
 
         Text{
           text:root.currentWorkspace&&root.currentWorkspace.monitor
-            ?root.currentWorkspace.monitor.name:""
+            ?root.currentWorkspace.monitor:""
           color:"#6c7086"
           font.pixelSize:10
         }
@@ -150,8 +152,8 @@ ExpandableModule{
             required property int index
             readonly property bool active:index===root.currentGroup
             readonly property var workspaces:root.workspacesForGroup(index)
-            readonly property bool occupied:workspaces.some(workspace=>workspace.toplevels.values.length>0)
-            readonly property bool urgent:workspaces.some(workspace=>workspace.urgent)
+            readonly property bool occupied:workspaces.some(workspace=>workspace.windows>0)
+            readonly property bool urgent:workspaces.some(workspace=>workspaceState.isUrgent(workspace))
 
             Layout.fillWidth:true
             Layout.preferredHeight:22
@@ -187,14 +189,14 @@ ExpandableModule{
             required property int index
             readonly property int workspaceNumber:root.currentGroup*root.workspaceCount+index+1
             readonly property var workspace:root.workspaceFor(workspaceNumber)
-            readonly property bool active:workspace&&workspace.focused
-            readonly property bool occupied:workspace&&workspace.toplevels.values.length>0
+            readonly property bool active:workspace&&root.currentWorkspace&&workspace.address===root.currentWorkspace.address
+            readonly property bool occupied:workspace&&workspace.windows>0
 
             Layout.fillWidth:true
             Layout.preferredHeight:28
             radius:6
             color:active?Theme.accent:(occupied?"#7F111224":"#50181825")
-            border.width:workspace&&workspace.urgent?1:0
+            border.width:workspace&&workspaceState.isUrgent(workspace)?1:0
             border.color:"#f38ba8"
 
             Text{
