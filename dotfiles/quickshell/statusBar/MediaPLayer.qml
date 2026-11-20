@@ -163,7 +163,7 @@ ExpandableModule{
   backgroundColor:mediaModule.dominantColor
 
   property int cavaBars:30
-  property real cavaGain: 1.8
+  property real cavaGain:1
   property var audioLevels:Array(cavaBars).fill(0)
 
   Process{
@@ -201,23 +201,18 @@ ExpandableModule{
 
     stdout:SplitParser{
       onRead:(data)=>{
-        let frames=data.toString().trim().split(/\r?\n/).filter(frame=>frame.length>0);
-        if(frames.length===0)return;
-        let values=frames[frames.length-1].split(";").filter(value=>value.length>0);
+        let values=data.toString().trim().split(";").filter(value=>value.length>0);
         let half=mediaModule.cavaBars/2;
-        if(values.length<half)return;
+        if(values.length!==half)return;
         
         let halfLevels=[];
         for(let i=0;i<half;i++){
           let level=Number(values[i]);
-          if(!isNaN(level))halfLevels.push(Math.max(0,Math.min(1,(level/100)*mediaModule.cavaGain)));
+          if(!Number.isFinite(level))return;
+          halfLevels.push(Math.max(0,Math.min(1,(level/100)*mediaModule.cavaGain)));
         }
 
-        let newLevels=[];
-        for(let i=half-1;i>=0;i--)newLevels.push(halfLevels[i]);
-        for(let i=0;i<half;i++)newLevels.push(halfLevels[i]);
-
-        mediaModule.audioLevels=newLevels;
+        mediaModule.audioLevels=halfLevels.slice().reverse().concat(halfLevels);
       }
     }
 
@@ -376,12 +371,12 @@ ExpandableModule{
         spacing:barGap
 
         Repeater{
-          model:mediaModule.audioLevels
+          model:mediaModule.cavaBars
 
           Rectangle{
-            required property real modelData
+            required property int index
             width:visualizer.barWidth
-            height:Math.max(visualizer.minBarHeight,Math.min(visualizer.height,modelData*visualizer.height))
+            height:Math.max(visualizer.minBarHeight,Math.min(visualizer.height,(mediaModule.audioLevels[index]??0)*visualizer.height))
             y:0
             color:"#cdd6f4"
             radius:Math.min(2,width/2)
