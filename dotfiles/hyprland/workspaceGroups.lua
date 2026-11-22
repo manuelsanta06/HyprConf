@@ -38,6 +38,7 @@ return function(config)
   local function changeGroup(newGroup,carryWindow)
     local focused=hl.get_active_monitor()
     if not focused then return end
+    local oldGroup=group
     -- Capture the original window before restoring workspaces changes focus.
     local window=carryWindow and hl.get_active_window()
 
@@ -79,6 +80,9 @@ return function(config)
       hl.dispatch(hl.dsp.window.move({window=window,workspace=targets[focused.name],follow=true}))
     end
     publishGroup()
+    if oldGroup~=group then
+      hl.dispatch(hl.dsp.event("workspace-osd,group,"..oldGroup..","..group))
+    end
   end
 
   local function changeWorkspace(position,carryWindow)
@@ -148,8 +152,10 @@ return function(config)
         memory[g][name]=g*10+(id-1)%10+1
       end
     end
+    local oldGroup=group
     group=newGroup
     publishGroup()
+    hl.dispatch(hl.dsp.event("workspace-osd,swap,"..oldGroup..","..group))
   end
 
   local function swapWorkspaces()
@@ -184,6 +190,7 @@ return function(config)
       targets[first.name],targets[second.name]=targets[second.name],targets[first.name]
     end
     if focused then hl.dispatch(hl.dsp.focus({monitor=focused})) end
+    hl.dispatch(hl.dsp.event("workspace-osd,monitors"))
   end
 
   rememberMonitors(hl.get_monitors())

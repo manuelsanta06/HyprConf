@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
-import Quickshell.Io
 import Quickshell.Hyprland
 import "../components"
 import ".."
@@ -11,11 +10,10 @@ ExpandableModule{
 
   property int workspaceCount:10
   property bool active:true
-  property int currentGroup:0
+  readonly property int currentGroup:WorkspaceState.currentGroup
+  readonly property var workspaceState:WorkspaceState
   property var currentWorkspace:workspaceState.currentWorkspace
   property var focusedWindow:Hyprland.activeToplevel
-
-  WorkspaceState{id:workspaceState}
 
   collapsedHeight:48
   expandedHeight:130
@@ -43,21 +41,6 @@ ExpandableModule{
     const first=number*root.workspaceCount+1
     return workspaceState.workspaces.filter(workspace=>
       workspace.id>=first&&workspace.id<first+root.workspaceCount)
-  }
-
-  FileView{
-    id:groupFile
-    path:Quickshell.env("XDG_RUNTIME_DIR")+"/workspace-group"
-    watchChanges:true
-    printErrors:false
-    onFileChanged:reload()
-    onLoaded:updateGroup()
-    onTextChanged:updateGroup()
-
-    function updateGroup(){
-      const value=text().trim()
-      if(/^[0-9]$/.test(value))root.currentGroup=Number(value)
-    }
   }
 
   function workspaceLabel(workspace){
