@@ -10,7 +10,7 @@ OsdBase{
   readonly property real numberWidth:Math.max(50,Math.min(130,number.implicitWidth))
 
   position:"bottom"
-  width:numberWidth+176
+  width:numberWidth+details.width+73
   height:92
   padding:8
   backgroundColor:"transparent"
@@ -79,12 +79,15 @@ OsdBase{
     }
 
     Column{
+      id:details
+      width:Math.max(captionLabel.implicitWidth,root.slot>=0?103:0,root.keepOpen?hint.implicitWidth:0)
       anchors.left:divider.right
       anchors.leftMargin:12
       anchors.verticalCenter:parent.verticalCenter
       spacing:root.keepOpen?7:10
 
       Text{
+        id:captionLabel
         text:root.caption
         color:Qt.alpha(Theme.foreground,0.65)
         font.pixelSize:9
@@ -121,6 +124,7 @@ OsdBase{
       }
 
       Text{
+        id:hint
         visible:root.keepOpen
         text:"0–9 elegir · Esc salir"
         color:Qt.alpha(Theme.foreground,0.5)

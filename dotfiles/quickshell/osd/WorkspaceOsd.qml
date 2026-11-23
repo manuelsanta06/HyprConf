@@ -20,7 +20,7 @@ Scope{
       implicitHeight:toast.height
       color:"transparent"
       anchors.bottom:true
-      margins.bottom:36
+      margins.bottom:9
       exclusionMode:ExclusionMode.Ignore
       focusable:false
       mask:Region{}
