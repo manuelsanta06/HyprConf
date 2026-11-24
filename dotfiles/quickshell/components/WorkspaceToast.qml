@@ -126,7 +126,7 @@ OsdBase{
       Text{
         id:hint
         visible:root.keepOpen
-        text:"0–9 elegir · Esc salir"
+        text:"0–9 select · Esc cancel"
         color:Qt.alpha(Theme.foreground,0.5)
         font.pixelSize:8
       }

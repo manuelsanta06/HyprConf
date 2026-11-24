@@ -25,11 +25,11 @@ Scope{
     if(!workspace||!workspace.name)return
     const numbered=Number.isInteger(workspace.id)&&workspace.id>=1
     const special=workspace.type==="special"||workspace.name.startsWith("special:")
-    let caption=special?"ESPECIAL":"WORKSPACE"
+    let caption=special?"SPECIAL":"WORKSPACE"
     if(action){
-      if(action.kind==="group")caption="GRUPO "+action.to
-      else if(action.kind==="swap")caption="GRUPOS "+action.from+" ↔ "+action.to
-      else if(action.kind==="monitors")caption="PANTALLAS ↔"
+      if(action.kind==="group")caption="GROUP "+action.to
+      else if(action.kind==="swap")caption="GROUPS "+action.from+" ↔ "+action.to
+      else if(action.kind==="monitors")caption="MONITORS ↔"
     }
     showRequested(monitor.name,numbered?String(workspace.id):workspace.name.replace(/^special:/,""),
       caption,numbered&&workspace.id<=100?(workspace.id-1)%10:-1,false)
@@ -56,7 +56,7 @@ Scope{
         const focused=WorkspaceState.monitors.find(monitor=>monitor.focused)
         promptMonitor=Hyprland.focusedMonitor?Hyprland.focusedMonitor.name:(focused?focused.name:"")
         hideRequested("")
-        showRequested(promptMonitor,String(WorkspaceState.currentGroup),"INTERCAMBIAR",WorkspaceState.currentGroup,true)
+        showRequested(promptMonitor,String(WorkspaceState.currentGroup),"SWAP GROUP",WorkspaceState.currentGroup,true)
       }else if(selecting){
         selecting=false
         modeExit.restart()
