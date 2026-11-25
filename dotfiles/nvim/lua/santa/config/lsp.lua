@@ -1,69 +1,35 @@
-local capabilities = require('cmp_nvim_lsp').default_capabilities()
+local group = vim.api.nvim_create_augroup("SantaLsp",{clear=true})
 
-local function setup_server(server_name, config)
-  config = config or {}
-  config.capabilities = capabilities
-  for k, v in pairs(config) do
-    vim.lsp.config[server_name][k] = v
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = group,
+  callback = function(event)
+    local function map(key, action, desc)
+      vim.keymap.set("n", key, action, { buffer = event.buf, desc = desc })
+    end
+
+    map("gd", vim.lsp.buf.definition, "Go to definition")
+    map("gr", vim.lsp.buf.references, "Show references")
+    map("K", vim.lsp.buf.hover, "Show documentation")
+    map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+    map("<leader>ca", vim.lsp.buf.code_action, "Code actions")
+    map("<leader>f", function()
+      vim.lsp.buf.format({ async = true })
+    end, "Format buffer")
+  end,
+})
+
+vim.lsp.config("*", {
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
+})
+
+for name, settings in pairs(require("santa.languages").servers) do
+  vim.lsp.config(name, settings)
+  local cmd = vim.lsp.config[name].cmd
+  if type(cmd) ~= "table" or vim.fn.executable(cmd[1]) == 1 then
+    vim.lsp.enable(name)
+  else
+    vim.schedule(function()
+      vim.notify("LSP " .. name .. ": executable not found: " .. cmd[1], vim.log.levels.WARN)
+    end)
   end
-  
-  vim.lsp.enable(server_name)
 end
-
-
--- C / C++
-setup_server("clangd", {
-  cmd = { "clangd", "--compile-commands-dir=build" }
-})
-
--- Go
-setup_server("gopls", {})
-
---qml/qt
-setup_server("qmlls", {
-  cmd = { "qmlls6", "-E" },
-  filetypes = { "qml", "qmljs" },
-  root_dir = vim.fs.root(0, { ".qmlls.ini", ".git" })
-})
-
--- Python
-setup_server("pyright",{})
-
--- TypeScript
-setup_server("ts_ls", {})
-
--- CSS
-setup_server("cssls", {})
-
--- Lua (lua_ls)/Hyprland
-setup_server("lua_ls",{
-  settings={
-    Lua={
-      workspace={
-        library={"/usr/share/hypr/stubs"}
-      },
-      diagnostics={
-        globals={"hl"}
-      }
-    }
-  }
-})
-
-
-vim.diagnostic.config({
-  virtual_text = false,
-  virtual_lines = true,
-  virtual_lines = {
-    severity = { min = vim.diagnostic.severity.ERROR },
-  },
-  signs = false,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-})
-
--- Colores personalizados
-vim.api.nvim_set_hl(0, "DiagnosticVirtualTextError", {fg = "#ff0000" , bg = "NONE"})
-vim.api.nvim_set_hl(0, "DiagnosticVirtualTextWarn" , {fg = "#f28907" , bg = "NONE"})
-vim.api.nvim_set_hl(0, "DiagnosticVirtualTextInfo" , {fg = "#ffffff" , bg = "NONE"})
-vim.api.nvim_set_hl(0, "DiagnosticVirtualTextHint" , {fg = "#ffffff" , bg = "NONE"})

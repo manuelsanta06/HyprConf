@@ -1,10 +1,13 @@
 return {
-  "norcalli/nvim-colorizer.lua",
-  event = "BufReadPre",
-  config = function()
-    require("colorizer").setup({"*"},{
-      RRGGBBAA=true,
-      rgb_fn = true,
-    })
-  end,
+  "catgoose/nvim-colorizer.lua",
+  event = { "BufReadPost", "BufNewFile" },
+  opts = {
+    options = {
+      parsers = {
+        hex = { rrggbbaa = true },
+        names = { enable = true },
+        rgb = { enable = true },
+      },
+    },
+  },
 }
