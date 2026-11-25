@@ -19,5 +19,14 @@ return {
   servers={
     clangd={},
     gopls={},
+    lua_ls={
+      settings={
+        Lua={
+          -- Match the system Lua; project .luarc files can override this.
+          runtime={version="Lua 5.5"},
+          workspace={checkThirdParty=false},
+        },
+      },
+    },
   },
 }

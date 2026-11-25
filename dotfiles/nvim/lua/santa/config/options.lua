@@ -1,6 +1,8 @@
 local opt=vim.opt
 
 opt.termguicolors=true
+opt.winborder="rounded"
+opt.winblend=0
 opt.number=true
 opt.relativenumber=true
 opt.mouse="a"

@@ -1,7 +1,7 @@
 return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
-  dependencies = { "hrsh7th/cmp-nvim-lsp" },
+  dependencies={"hrsh7th/cmp-nvim-lsp","folke/lazydev.nvim"},
   config = function()
     require("santa.config.lsp")
   end,

@@ -1,6 +1,18 @@
 local cmp = require("cmp")
 
 cmp.setup({
+  window={
+    completion={
+      border="none",
+      winhighlight="Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+      winblend=0,
+    },
+    documentation={
+      border="rounded",
+      winhighlight="Normal:NormalFloat,FloatBorder:FloatBorder",
+      winblend=0,
+    },
+  },
   preselect = cmp.PreselectMode.None,
   snippet = {
     expand = function(args)
@@ -16,6 +28,7 @@ cmp.setup({
     ["<CR>"] = cmp.mapping.confirm({ select = false }),
   }),
   sources = cmp.config.sources({
+    {name="lazydev",group_index=0},
     { name = "nvim_lsp" },
     { name = "path" },
   }, {
