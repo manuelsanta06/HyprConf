@@ -5,6 +5,7 @@ opt.winborder="rounded"
 opt.winblend=0
 opt.number=true
 opt.relativenumber=true
+opt.signcolumn="yes:1"
 opt.mouse="a"
 opt.hlsearch=true
 
