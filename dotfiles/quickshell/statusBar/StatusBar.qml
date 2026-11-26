@@ -61,13 +61,14 @@ PanelWindow{
     id:hideTimer
     interval:root.hideDelayMs
     repeat:false
-    onTriggered:root.revealed=false
+    onTriggered:if(!systemTray.menuOpen)root.revealed=false
   }
 
   Timer{
     id:externalHideTimer
     repeat:false
     onTriggered: {
+      if(systemTray.menuOpen)return;
       if(rootHover.hovered)hideTimer.restart();
       else root.revealed=false;
     }
@@ -90,7 +91,7 @@ PanelWindow{
     id:rootHover
     onHoveredChanged:{
       if(hovered){hideTimer.stop();root.revealed=true;}
-      else{hideTimer.restart();}
+      else if(!systemTray.menuOpen){hideTimer.restart();}
     }
   }
 
@@ -137,6 +138,18 @@ PanelWindow{
       Item{Layout.fillHeight:true}
 
       // BOTTOM
+      SystemTrayWidget{
+        id:systemTray
+        Layout.fillWidth:true
+        active:root.revealed
+        onMenuOpenChanged:{
+          if(menuOpen){
+            hideTimer.stop()
+            externalHideTimer.stop()
+            root.revealed=true
+          }else if(!rootHover.hovered)hideTimer.restart()
+        }
+      }
       FileDrawer{id:fileDrawer}
       Rectangle{Layout.fillWidth:true;implicitHeight:1;color:"#22ffffff" }
       NetworkWidget{id:networkWidget;active:root.revealed}
