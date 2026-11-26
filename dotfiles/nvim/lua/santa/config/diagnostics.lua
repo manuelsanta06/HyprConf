@@ -1,8 +1,6 @@
 vim.diagnostic.config({
   virtual_text = false,
-  virtual_lines = {
-    severity = { min = vim.diagnostic.severity.ERROR },
-  },
+  virtual_lines = false,
   signs = false,
   underline = true,
   update_in_insert = false,
