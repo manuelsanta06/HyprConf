@@ -23,6 +23,7 @@ return {
         LineNr                      = {fg = "#ffffff" },
         LineNrAbove                 = {fg = "#ffffff" },
         LineNrBelow                 = {fg = "#ffffff" },
+        MiniIndentscopeSymbol        = {fg = "#8f00ff" },
         DiagnosticVirtualLinesError = {fg = "#ff0000", bg = "NONE" },
         DiagnosticVirtualLinesWarn  = {fg = "#f28907", bg = "NONE" },
         DiagnosticVirtualLinesInfo  = {fg = "#ffffff", bg = "NONE" },

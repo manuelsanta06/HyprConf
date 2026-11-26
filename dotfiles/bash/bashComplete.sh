@@ -1,4 +1,8 @@
-complete -cf man sudo pls nvrun
+complete -cf nvrun
+
+# makes pls works as sudo does
+_comp_load sudo
+complete -F _comp_cmd_sudo pls
 
 _rwallpaper_complete(){
   local dir="$HOME/resources/wallpapers"
